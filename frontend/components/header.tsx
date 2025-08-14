@@ -31,10 +31,10 @@ export default function Header() {
           <span className="text-[20px]">
             M<span className="sr-only">O</span>
             <div
-              className="relative inline-block h-[1cap] w-[1ch] group-hover:w-[2ch] bg-linear-to-r from-secondary to-transparent rounded-[0.8cap] transition-width duration-300"
+              className="relative inline-block h-[1cap] w-[1ch] group-hover:w-[2ch] bg-linear-to-r from-secondary to-transparent rounded-[0.8cap] transition-width duration-300 ease-in-out"
               aria-hidden="true"
             >
-              <div className="absolute inset-[3.5px_4px] bg-dark rounded-[0.8cap]"></div>
+              <div className="absolute inset-[0.24cap_0.28cap] bg-dark rounded-[0.8cap]"></div>
             </div>
             REAU
           </span>

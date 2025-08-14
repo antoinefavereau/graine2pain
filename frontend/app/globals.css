@@ -8,10 +8,32 @@
   --color-primary: #ff1cf7;
   --color-secondary: #00f0ff;
   --color-tertiary: #9747ff;
+
   --font-body: "Inter", sans-serif;
   --font-heading: "Archivo", sans-serif;
+  --font-julius: "Julius Sans One", sans-serif;
 
   --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
+}
+
+/* Propriété CSS personnalisée pour l'animation de couleur */
+@property --gradient-color {
+  syntax: "<color>";
+  initial-value: #00f0ff;
+  inherits: false;
+}
+
+/* Classe pour dégradé animé */
+@layer utilities {
+  .bg-animated-gradient {
+    --gradient-color: var(--color-secondary);
+    background: linear-gradient(to right, var(--gradient-color), transparent);
+    transition: --gradient-color 300ms ease-in-out;
+  }
+
+  .group:hover .bg-animated-gradient {
+    --gradient-color: var(--color-primary);
+  }
 }
 
 body {
