@@ -10,8 +10,19 @@
   --color-tertiary: #9747ff;
   --font-body: "Inter", sans-serif;
   --font-heading: "Archivo", sans-serif;
+
+  --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
 }
 
 body {
   font-family: var(--font-body);
+}
+
+@keyframes hexa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
 }

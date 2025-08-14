@@ -9,7 +9,7 @@ const navItems = [
 
 export default function Header() {
   return (
-    <header className="position-sticky top-0 bg-dark">
+    <header className="sticky top-0 z-10 bg-dark">
       <div className="w-full h-4 bg-linear-to-r from-primary via-tertiary to-secondary"></div>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center px-20 py-2">
         <div className="flex items-center">
