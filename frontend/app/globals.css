@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-black: #161a24;
+  --color-white: #ffffff;
+  --color-dark: #292a31;
+  --color-light: #979797;
+  --color-primary: #ff1cf7;
+  --color-secondary: #00f0ff;
+  --color-tertiary: #9747ff;
+
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Archivo", sans-serif;
+  --font-julius: "Julius Sans One", sans-serif;
+
+  --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Propriété CSS personnalisée pour l'animation de couleur */
+@property --gradient-color {
+  syntax: "<color>";
+  initial-value: #00f0ff;
+  inherits: false;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Classe pour dégradé animé */
+@layer utilities {
+  .bg-animated-gradient {
+    --gradient-color: var(--color-secondary);
+    background: linear-gradient(to right, var(--gradient-color), transparent);
+    transition: --gradient-color 300ms ease-in-out;
+  }
+
+  .group:hover .bg-animated-gradient {
+    --gradient-color: var(--color-primary);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+@keyframes hexa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
 }
