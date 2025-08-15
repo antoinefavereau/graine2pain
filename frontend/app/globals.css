@@ -11,7 +11,7 @@
 
   --font-body: "Inter", sans-serif;
   --font-heading: "Archivo", sans-serif;
-  --font-julius: "Julius Sans One", sans-serif;
+  --font-julius: var(--font-julius), "Julius Sans One", sans-serif;
 
   --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
 }
