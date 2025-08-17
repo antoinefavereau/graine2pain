@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function Hero() {
@@ -31,7 +33,7 @@ export default function Hero() {
           <span className="group text-[100px] leading-none">
             M<span className="sr-only">O</span>
             <div
-              className="relative inline-block h-[1cap] w-[2ch] bg-animated-gradient rounded-[0.8cap]"
+              className="relative inline-block h-[1cap] w-[2ch] bg-animated-gradient-primary-to-secondary rounded-[0.8cap]"
               aria-hidden="true"
             >
               <div className="absolute inset-[0.24cap_0.28cap] bg-black rounded-[0.8cap]"></div>
@@ -39,24 +41,31 @@ export default function Hero() {
             REAU
           </span>
           <span
-            className="text-[116px] leading-none"
+            className="group text-[116px] leading-none bg-animated-gradient-from-transparent bg-clip-text text-transparent transition-all duration-300"
             style={{
-              WebkitTextFillColor: "transparent",
               WebkitTextStroke: "1px var(--color-white)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.webkitTextStroke = "0px transparent";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.webkitTextStroke = "1px var(--color-white)";
             }}
           >
             ATHÉNA
           </span>
-          <span className="flex justify-between text-xl font-julius">
-            <span>P</span>
-            <span>o</span>
-            <span>r</span>
-            <span>t</span>
-            <span>f</span>
-            <span>o</span>
-            <span>l</span>
-            <span>i</span>
-            <span>o</span>
+          <span className="group overflow-hidden">
+            <span className="flex justify-between text-2xl font-julius leading-none text-shadow-[0_-20px_white] transform group-hover:translate-y-[100%] transition-transform duration-300">
+              <span>P</span>
+              <span>o</span>
+              <span>r</span>
+              <span>t</span>
+              <span>f</span>
+              <span>o</span>
+              <span>l</span>
+              <span>i</span>
+              <span>o</span>
+            </span>
           </span>
         </h1>
         <Image
@@ -64,7 +73,7 @@ export default function Hero() {
           alt="Tech Line"
           width={525}
           height={27}
-          className="w-3/4 h-auto place-self-center"
+          className="w-3/4 h-auto place-self-center select-none pointer-events-none"
         />
       </div>
     </section>

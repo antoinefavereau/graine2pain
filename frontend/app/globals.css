@@ -16,23 +16,60 @@
   --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
 }
 
-/* Propriété CSS personnalisée pour l'animation de couleur */
 @property --gradient-color {
   syntax: "<color>";
   initial-value: #00f0ff;
   inherits: false;
 }
 
-/* Classe pour dégradé animé */
+@property --gradient-color-from {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --gradient-color-via {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
+@property --gradient-color-to {
+  syntax: "<color>";
+  initial-value: transparent;
+  inherits: false;
+}
+
 @layer utilities {
-  .bg-animated-gradient {
+  .bg-animated-gradient-primary-to-secondary {
     --gradient-color: var(--color-secondary);
     background: linear-gradient(to right, var(--gradient-color), transparent);
     transition: --gradient-color 300ms ease-in-out;
   }
 
-  .group:hover .bg-animated-gradient {
+  .group:hover .bg-animated-gradient-primary-to-secondary {
     --gradient-color: var(--color-primary);
+  }
+
+  .bg-animated-gradient-from-transparent {
+    --gradient-color-from: transparent;
+    --gradient-color-via: transparent;
+    --gradient-color-to: transparent;
+    background-image: linear-gradient(
+      to right,
+      var(--gradient-color-from),
+      var(--gradient-color-via),
+      var(--gradient-color-to)
+    );
+    transition: --gradient-color-from 300ms ease-in-out,
+      --gradient-color-via 300ms ease-in-out,
+      --gradient-color-to 300ms ease-in-out;
+
+    &:hover {
+      --gradient-color-from: var(--color-secondary);
+      --gradient-color-via: var(--color-tertiary);
+      --gradient-color-to: var(--color-primary);
+    }
   }
 }
 
