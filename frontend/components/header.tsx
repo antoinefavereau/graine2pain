@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 bg-dark">
       <div className="w-full h-4 bg-linear-to-r from-primary via-tertiary to-secondary"></div>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-20 py-2">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-20 py-2">
         <div className="flex items-center">
           <MenuItem item={{ href: "#", icon: "undo", label: "Retour" }} />
           <nav className="grow">
