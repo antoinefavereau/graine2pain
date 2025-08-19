@@ -85,3 +85,21 @@ body {
     transform: rotate(180deg);
   }
 }
+
+@keyframes scrollerPulse {
+  0% {
+    opacity: 0.8;
+  }
+  12.5% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  37.5% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}

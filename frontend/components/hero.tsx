@@ -76,6 +76,17 @@ export default function Hero() {
           className="w-3/4 h-auto place-self-center select-none pointer-events-none"
         />
       </div>
+      <a
+        href="#"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-1"
+      >
+        <div className="h-2 w-2 -mt-1 rotate-45 border-r-3 border-b-3 border-white opacity-80 animate-[scrollerPulse_1200ms_ease-in-out_infinite_0ms]"></div>
+        <div className="h-4 w-4 -mt-3 rotate-45 border-r-3 border-b-3 border-white opacity-80 animate-[scrollerPulse_1200ms_ease-in-out_infinite_300ms]"></div>
+        <div className="h-5 w-5 -mt-4 rotate-45 border-r-3 border-b-3 border-white opacity-80 animate-[scrollerPulse_1200ms_ease-in-out_infinite_600ms]"></div>
+        <div className="text-white opacity-80 animate-[scrollerPulse_1200ms_ease-in-out_infinite_900ms]">
+          Scroller
+        </div>
+      </a>
     </section>
   );
 }
