@@ -10,10 +10,11 @@
   --color-tertiary: #9747ff;
 
   --font-body: "Inter", sans-serif;
-  --font-heading: "Archivo", sans-serif;
+  --font-heading: var(--font-heading), "Archivo", sans-serif;
   --font-julius: var(--font-julius), "Julius Sans One", sans-serif;
 
   --animate-hexa-spin: hexa-spin 2s ease-in-out alternate infinite;
+  --animate-bg-to-right: bg-to-right 6s ease-in-out alternate infinite;
 }
 
 @property --gradient-color {
@@ -102,4 +103,38 @@ body {
   100% {
     opacity: 0.8;
   }
+}
+
+@keyframes bg-to-right {
+  0% {
+    background-position: 0% top;
+  }
+  100% {
+    background-position: 100% top;
+  }
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+::view-transition-new(root) {
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
+  animation-name: var(--transition-new-animation, none);
 }

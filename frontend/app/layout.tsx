@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import { Julius_Sans_One } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "material-symbols";
+import DirectionalTransitionsProvider from "@/components/directional-transitions-provider";
 
-const juliusSansOne = Julius_Sans_One({
-  weight: "400",
-  subsets: ["latin"],
+const juliusSansOne = localFont({
+  src: "../public/fonts/JuliusSansOne-Regular.ttf",
   variable: "--font-julius",
+});
+
+const archivo = localFont({
+  src: "../public/fonts/Archivo.ttf",
+  variable: "--font-heading",
 });
 
 export const metadata: Metadata = {
@@ -22,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`antialiased bg-black text-white ${juliusSansOne.variable}`}
+        className={`${juliusSansOne.variable} ${archivo.variable} antialiased bg-black text-white`}
       >
-        {children}
+        <DirectionalTransitionsProvider>
+          {children}
+        </DirectionalTransitionsProvider>
       </body>
     </html>
   );
