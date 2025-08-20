@@ -55,7 +55,7 @@ export default function Hero() {
             ATHÉNA
           </span>
           <span className="group overflow-hidden">
-            <span className="flex justify-between text-2xl font-julius leading-none text-shadow-[0_-20px_white] transform group-hover:translate-y-[100%] transition-transform duration-300">
+            <span className="flex justify-between text-2xl font-julius leading-none text-shadow-[0_-22px_white] transform group-hover:translate-y-[22px] transition-transform duration-300">
               <span>P</span>
               <span>o</span>
               <span>r</span>
