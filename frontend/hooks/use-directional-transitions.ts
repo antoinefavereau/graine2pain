@@ -21,7 +21,11 @@ export function useDirectionalTransitions() {
       if (!link) return;
 
       const href = link.getAttribute("href");
-      if (!href || href === pathname || href.startsWith("http")) return;
+      if (!href || href.startsWith("http")) return;
+
+      const hrefPathname = href.split("?")[0].split("#")[0];
+
+      if (hrefPathname === pathname) return;
 
       // Empêcher la navigation normale
       e.preventDefault();
@@ -29,7 +33,7 @@ export function useDirectionalTransitions() {
 
       // Calculer la direction
       const currentSegments = pathname.split("/").filter(Boolean);
-      const targetSegments = href.split("/").filter(Boolean);
+      const targetSegments = hrefPathname.split("/").filter(Boolean);
 
       let direction: string | null = null;
 
@@ -66,7 +70,7 @@ export function useDirectionalTransitions() {
             // Attendre que Next.js ait terminé la navigation
             await new Promise((resolve) => {
               const checkNavigation = () => {
-                if (window.location.pathname === href) {
+                if (window.location.pathname === hrefPathname) {
                   // Petit délai supplémentaire pour s'assurer que le contenu est rendu
                   setTimeout(resolve, 50);
                 } else {
