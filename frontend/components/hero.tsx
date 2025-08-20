@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section className="relative grow flex flex-col items-start justify-center px-40">
       <div
-        className="absolute h-2/3 w-auto aspect-square top-1/10 right-[8vh] overflow-hidden select-none pointer-events-none before:absolute before:-inset-1/10 before:bg-linear-to-br before:from-primary before:via-tertiary before:to-secondary before:animate-hexa-spin"
+        className="absolute h-2/3 w-auto aspect-square top-1/10 right-[8vh] overflow-hidden select-none pointer-events-none before:absolute before:-inset-1/10 before:bg-linear-to-br/srgb before:from-primary before:to-secondary before:animate-hexa-spin"
         style={
           {
             mask: 'url("/hexa tech shape.svg") no-repeat center/contain',
