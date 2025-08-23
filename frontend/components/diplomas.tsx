@@ -42,7 +42,7 @@ export default function Diplomas() {
       <h2 className="text-7xl font-heading font-bold">
         DIPL<span className="sr-only">Ô</span>
         <div
-          className="relative inline-block h-[1.6cap] w-[2.5ch] translate-y-[0.3cap] -mr-[0.4ch] bg-linear-to-r/srgb from-secondary to-primary/50 rounded-[0.65cap] before:content-['^'] before:absolute before:left-1/2 before:-translate-x-1/2 before:-top-[1cap]"
+          className="relative inline-block h-[1.6cap] w-[2.5ch] translate-y-[0.3cap] -mr-[0.4ch] bg-linear-to-r/srgb from-secondary to-primary/50 rounded-[0.65cap] before:content-['^'] before:absolute before:left-1/2 before:-translate-x-1/2 before:-top-[1.2cap] before:text-4xl"
           aria-hidden="true"
         >
           <div className="absolute inset-[0.24cap_0.28cap] bg-black rounded-[0.4cap]">
