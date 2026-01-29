@@ -1,26 +1,141 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-lighter: #e6fbf2;
+  --primary-light: #a8f1ce;
+  --primary-base: #3ddc97;
+  --primary-dark: #2bb678;
+  --primary-darker: #1f7d52;
+  --primary-black: #0e3e2b;
+
+  --secondary-lighter: #f2ebff;
+  --secondary-light: #c6a9ff;
+  --secondary-base: #9b6bff;
+  --secondary-dark: #7447cc;
+  --secondary-darker: #4e2f8a;
+  --secondary-black: #251646;
+
+  --grey-lighter: #f8f9fa;
+  --grey-light: #dadce0;
+  --grey-base: #9aa0a6;
+  --grey-medium: #5f6368;
+  --grey-dark: #282a2d;
+  --grey-darker: #202124;
+  --grey-darkest: #17181b;
+  --grey-black: #0e1013;
+
+  --error-lighter: #ffeaea;
+  --error-light: #ffb3b3;
+  --error-base: #ff6b6b;
+  --error-dark: #d94c4c;
+  --error-darker: #7a2a2a;
+  --error-black: #461818;
+
+  --warning-lighter: #fff6e1;
+  --warning-light: #ffe29a;
+  --warning-base: #ffc857;
+  --warning-dark: #d6a33f;
+  --warning-darker: #7a5a1f;
+  --warning-black: #47340f;
+
+  --success-lighter: #e9fbf3;
+  --success-light: #9af0c9;
+  --success-base: #3ddc97;
+  --success-dark: #2fae77;
+  --success-darker: #1f5f43;
+  --success-black: #123826;
+
+  --info-lighter: #eef4ff;
+  --info-light: #b7ccff;
+  --info-base: #5991ff;
+  --info-dark: #4673cc;
+  --info-darker: #2a4473;
+  --info-black: #192940;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary-lighter: var(--primary-lighter);
+  --color-primary-light: var(--primary-light);
+  --color-primary-base: var(--primary-base);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-darker: var(--primary-darker);
+  --color-primary-black: var(--primary-black);
+
+  --color-secondary-lighter: var(--secondary-lighter);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-base: var(--secondary-base);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-secondary-darker: var(--secondary-darker);
+  --color-secondary-black: var(--secondary-black);
+
+  --color-grey-lighter: var(--grey-lighter);
+  --color-grey-light: var(--grey-light);
+  --color-grey-base: var(--grey-base);
+  --color-grey-medium: var(--grey-medium);
+  --color-grey-dark: var(--grey-dark);
+  --color-grey-darker: var(--grey-darker);
+  --color-grey-darkest: var(--grey-darkest);
+  --color-grey-black: var(--grey-black);
+
+  --color-error-lighter: var(--error-lighter);
+  --color-error-light: var(--error-light);
+  --color-error-base: var(--error-base);
+  --color-error-dark: var(--error-dark);
+  --color-error-darker: var(--error-darker);
+  --color-error-black: var(--error-black);
+
+  --color-warning-lighter: var(--warning-lighter);
+  --color-warning-light: var(--warning-light);
+  --color-warning-base: var(--warning-base);
+  --color-warning-dark: var(--warning-dark);
+  --color-warning-darker: var(--warning-darker);
+  --color-warning-black: var(--warning-black);
+
+  --color-success-lighter: var(--success-lighter);
+  --color-success-light: var(--success-light);
+  --color-success-base: var(--success-base);
+  --color-success-dark: var(--success-dark);
+  --color-success-darker: var(--success-darker);
+  --color-success-black: var(--success-black);
+
+  --color-info-lighter: var(--info-lighter);
+  --color-info-light: var(--info-light);
+  --color-info-base: var(--info-base);
+  --color-info-dark: var(--info-dark);
+  --color-info-darker: var(--info-darker);
+  --color-info-black: var(--info-black);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--color-grey-darkest);
+  color: var(--color-grey-lighter);
+  font-family: var(--font-inter), sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: "liga";
 }
