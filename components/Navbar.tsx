@@ -38,7 +38,7 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="flex justify-center p-10">
+    <div className="fixed left-0 right-0 top-0 flex justify-center p-10">
       <Card className="p-2 bg-grey-darkest/30">
         <nav>
           <ul className="flex gap-6">
