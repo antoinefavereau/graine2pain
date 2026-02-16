@@ -38,8 +38,8 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="fixed left-0 right-0 top-0 flex justify-center p-10">
-      <Card className="p-2 bg-grey-darkest/30">
+    <div className="fixed left-0 right-0 top-0 flex justify-center p-10 z-10">
+      <Card className="p-2">
         <nav>
           <ul className="flex gap-6">
             {links.map((link) => (

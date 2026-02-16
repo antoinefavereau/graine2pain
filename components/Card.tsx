@@ -9,7 +9,7 @@ export default function Card({ children, ...props }: CardProps) {
     <div
       {...props}
       className={twMerge(
-        "relative isolate rounded-3xl",
+        "relative isolate rounded-3xl bg-grey-darkest/30 backdrop-blur-sm",
         "before:absolute before:inset-0 before:-z-10 before:rounded-3xl before:p-px before:content-['']",
         "before:bg-[linear-gradient(to_bottom_right,var(--color-grey-base),var(--color-grey-dark),var(--color-grey-base))]",
         "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",

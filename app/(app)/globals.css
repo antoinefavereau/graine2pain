@@ -113,6 +113,16 @@ body {
   background: var(--color-grey-darkest);
   color: var(--color-grey-lighter);
   font-family: var(--font-inter), sans-serif;
+  color-scheme: dark;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .material-symbols-outlined {

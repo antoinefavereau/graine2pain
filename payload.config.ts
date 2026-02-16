@@ -9,6 +9,9 @@ import sharp from "sharp";
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Tags } from "./collections/Tags";
+import { InfoCard } from "./collections/InfoCard";
+import { Recommandations } from "./collections/Recommandations";
+import { Projects } from "./collections/Projects";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -21,7 +24,7 @@ export default buildConfig({
     },
   },
   globals: [],
-  collections: [Users, Media, Tags],
+  collections: [Users, Media, Tags, InfoCard, Recommandations, Projects],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
