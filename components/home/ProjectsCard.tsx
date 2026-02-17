@@ -18,7 +18,7 @@ export default function ProjectsCard({ projects }: ProjectsCardProps) {
         </Button>
       </div>
       <ul
-        className="flex flex-col gap-5 overflow-y-auto max-h-40 scrollbar-hide mask-linear-[to_bottom,#000_60%,transparent_100%] pb-10"
+        className="flex flex-col gap-5 overflow-y-auto max-h-40 scrollbar-hide mask-linear-[to_bottom,#000_60%,#0001_100%] pb-10"
         data-lenis-prevent
       >
         {projects.map((project) => (
