@@ -33,7 +33,7 @@ export default function RecommandationsCard({
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
   return (
-    <div className="relative max-w-md flex flex-col gap-5 p-5 bg-grey-dark rounded-[20px]">
+    <div className="relative grid grid-rows-[1fr_auto] gap-5 p-5 bg-grey-dark rounded-[20px]">
       <Swiper
         modules={[Navigation]}
         navigation={{
@@ -41,7 +41,7 @@ export default function RecommandationsCard({
           nextEl,
         }}
         loop
-        className="w-full flex-1"
+        className="w-full"
       >
         {recommandations.map((recommandation) => (
           <SwiperSlide key={recommandation.id}>

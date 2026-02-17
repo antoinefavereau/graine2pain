@@ -55,7 +55,7 @@ export default async function Home() {
         </FigmaEditCard>
         <Marquee direction="right">{tagsItems}</Marquee>
       </div>
-      <div className="relative flex justify-between gap-8 self-center px-10">
+      <div className="relative grid grid-cols-[auto_1fr_1fr] gap-8 self-center px-10">
         <InfosCard />
         <RecommandationsCard recommandations={recommandations.docs} />
         <ProjectsCard projects={projects.docs} />

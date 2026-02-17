@@ -10,7 +10,7 @@ interface ProjectsCardProps {
 
 export default function ProjectsCard({ projects }: ProjectsCardProps) {
   return (
-    <Card className="flex flex-col gap-5 p-5 max-w-md">
+    <Card className="flex flex-col gap-5 p-5">
       <div className="flex justify-between align-top">
         <h2 className="text-xl font-bold">Derniers projets</h2>
         <Button variant="outline" color="grey" onlyIcon>
