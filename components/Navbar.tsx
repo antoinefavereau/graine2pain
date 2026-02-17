@@ -48,7 +48,11 @@ export default function Navbar() {
                   variant="text"
                   color={link.color}
                   href={link.href}
-                  active={pathname === link.href}
+                  active={
+                    link.href === "/"
+                      ? pathname === "/"
+                      : pathname.startsWith(link.href)
+                  }
                   className="text-sm font-semibold"
                 >
                   <Icon name={link.icon} className="text-[20px]!" />

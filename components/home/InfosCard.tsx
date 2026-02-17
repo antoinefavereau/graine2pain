@@ -18,7 +18,7 @@ export default async function InfosCard() {
   return (
     <Card className="flex flex-col gap-5 p-5">
       <div className="flex items-start gap-6">
-        <Button variant="outline" color="grey" onlyIcon>
+        <Button variant="outline" color="grey" onlyIcon href="/about">
           <Icon name="arrow_outward" />
         </Button>
         <div className="relative flex-1 h-16 bg-linear-to-r from-secondary-base/50 to-primary-base/50 rounded-3xl">

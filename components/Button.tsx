@@ -5,7 +5,7 @@ import Card from "./Card";
 
 export type ButtonProps = (
   | React.ButtonHTMLAttributes<HTMLButtonElement>
-  | React.AnchorHTMLAttributes<HTMLAnchorElement>
+  | React.ComponentProps<typeof Link>
 ) & {
   variant?: "solid" | "outline" | "text";
   color?: "primary" | "secondary" | "grey" | "info" | "warning" | "error";

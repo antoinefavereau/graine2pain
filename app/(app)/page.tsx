@@ -11,9 +11,11 @@ import ProjectsCard from "@/components/home/ProjectsCard";
 
 export default async function Home() {
   const payload = await getPayload({ config });
+
   const tags = await payload.find({
     collection: "tags" as any,
   });
+
   const projects = await payload.find({
     collection: "projects" as any,
     sort: "order",
