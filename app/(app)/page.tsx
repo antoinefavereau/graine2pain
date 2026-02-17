@@ -8,7 +8,6 @@ import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
 import ProjectsCard from "@/components/home/ProjectsCard";
 // import Spline from "@splinetool/react-spline/next";
-// import CloudBackground from "@/components/CloudBackground";
 
 export default async function Home() {
   const payload = await getPayload({ config });
@@ -40,7 +39,6 @@ export default async function Home() {
         scene="https://prod.spline.design/pBFDqKeRoRidMcD9/scene.splinecode"
         className="absolute top-0 left-0 w-full h-full -z-10"
       /> */}
-      {/* <CloudBackground /> */}
       <div className="flex flex-col gap-12">
         <Marquee direction="left">{tagsItems}</Marquee>
         <FigmaEditCard className="self-center">
