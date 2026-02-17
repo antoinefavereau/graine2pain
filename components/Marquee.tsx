@@ -79,7 +79,7 @@ export default function Marquee({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div ref={wrapperRef} className={twMerge("flex w-fit", className)}>
+      <div ref={wrapperRef} className={twMerge("flex w-fit gap-5", className)}>
         {Array.from({ length: repeat }).map((_, i) => (
           <div key={i} className="contents">
             {children}

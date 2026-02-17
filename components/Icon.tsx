@@ -1,13 +1,15 @@
 import { twMerge } from "tailwind-merge";
 
-type IconProps = {
+export interface IconProps extends React.ComponentProps<"span"> {
   name: string;
-  className?: string;
-};
+}
 
-export default function Icon({ name, className }: IconProps) {
+export default function Icon({ name, ...props }: IconProps) {
   return (
-    <span className={twMerge("material-symbols-outlined", className)}>
+    <span
+      {...props}
+      className={twMerge("material-symbols-outlined text-xl!", props.className)}
+    >
       {name}
     </span>
   );

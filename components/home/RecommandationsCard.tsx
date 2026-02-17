@@ -33,7 +33,7 @@ export default function RecommandationsCard({
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
   return (
-    <div className="relative max-w-md flex flex-col gap-6 p-6 bg-grey-dark rounded-3xl">
+    <div className="relative max-w-md flex flex-col gap-5 p-5 bg-grey-dark rounded-[20px]">
       <Swiper
         modules={[Navigation]}
         navigation={{
@@ -45,30 +45,36 @@ export default function RecommandationsCard({
       >
         {recommandations.map((recommandation) => (
           <SwiperSlide key={recommandation.id}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <div className="flex items-start gap-5">
                 <Image
                   src={recommandation.image.url}
                   alt={recommandation.nom}
                   width={100}
                   height={100}
-                  className="w-14 h-14 rounded-full"
+                  className="w-12 h-12 rounded-full"
                 />
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-bold">{recommandation.nom}</h3>
-                  <p className="text-gray-light">{recommandation.fonction}</p>
+                <div className="flex flex-col gap-1">
+                  <h3 className="font-semibold uppercase">
+                    {recommandation.nom}
+                  </h3>
+                  <p className="text-gray-light text-sm font-light text-balance">
+                    {recommandation.fonction}
+                  </p>
                 </div>
               </div>
-              <p className="text-2xl">{recommandation.message}</p>
+              <p className="text-xl text-justify line-clamp-4 text-ellipsis">
+                {recommandation.message}
+              </p>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-      <div className="flex justify-between items-center gap-6">
+      <div className="flex justify-between items-center gap-5">
         <Button variant="outline" color="grey">
           Voir la lettre complète
         </Button>
-        <div className="flex gap-6">
+        <div className="flex gap-5">
           <Button ref={setPrevEl} variant="outline" color="grey" onlyIcon>
             <Icon name="arrow_back_ios_new" />
           </Button>

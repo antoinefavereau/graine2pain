@@ -115,10 +115,10 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         {...(props as any)}
         ref={ref}
         className={twMerge(
-          "flex justify-center items-center gap-2 px-4 py-2 rounded-3xl font-bold transition-colors duration-200",
+          "flex justify-center items-center gap-2 px-4 py-2 rounded-3xl transition-colors duration-200",
           selectedStyle.base,
           active && selectedStyle.active,
-          onlyIcon && "p-0 w-14 h-14",
+          onlyIcon && "p-0 w-12 h-12",
           props.className,
         )}
       >

@@ -26,24 +26,25 @@ export default async function Home() {
   });
 
   const tagsItems = tags.docs.map((tag: any) => (
-    <Card key={tag.id} className="text-nowrap px-4 py-2 text-grey-base text-xs">
+    <Card
+      key={tag.id}
+      className="text-nowrap px-3 py-1.5 text-grey-base text-xs"
+    >
       {tag.name}
     </Card>
   ));
 
   return (
-    <div className="relative min-h-screen pt-48 pb-10 flex flex-col justify-between gap-20">
+    <div className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16">
       {/* <Spline
         scene="https://prod.spline.design/pBFDqKeRoRidMcD9/scene.splinecode"
         className="absolute top-0 left-0 w-full h-full -z-10"
       /> */}
       {/* <CloudBackground /> */}
-      <div className="flex flex-col gap-20">
-        <Marquee direction="left" className="gap-6">
-          {tagsItems}
-        </Marquee>
+      <div className="flex flex-col gap-12">
+        <Marquee direction="left">{tagsItems}</Marquee>
         <FigmaEditCard className="self-center">
-          <h1 className="text-8xl font-extralight text-center">
+          <h1 className="text-7xl font-extralight text-center">
             Bienvenue dans mon{" "}
             <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
               portfolio
@@ -51,14 +52,12 @@ export default async function Home() {
           </h1>
           <Cursor
             title="Moreau Athéna"
-            className="absolute bottom-[-20px] right-[100px]"
+            className="absolute bottom-[-20px] right-[80px]"
           />
         </FigmaEditCard>
-        <Marquee direction="right" className="gap-6">
-          {tagsItems}
-        </Marquee>
+        <Marquee direction="right">{tagsItems}</Marquee>
       </div>
-      <div className="relative flex justify-between gap-10 self-center px-10">
+      <div className="relative flex justify-between gap-8 self-center px-10">
         <InfosCard />
         <RecommandationsCard recommandations={recommandations.docs} />
         <ProjectsCard projects={projects.docs} />

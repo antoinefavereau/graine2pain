@@ -41,7 +41,7 @@ export default function Navbar() {
     <div className="fixed left-0 right-0 top-0 flex justify-center p-10 z-10">
       <Card className="p-2">
         <nav>
-          <ul className="flex gap-6">
+          <ul className="flex gap-5">
             {links.map((link) => (
               <li key={link.href}>
                 <Button
@@ -49,8 +49,9 @@ export default function Navbar() {
                   color={link.color}
                   href={link.href}
                   active={pathname === link.href}
+                  className="text-sm font-semibold"
                 >
-                  <Icon name={link.icon} />
+                  <Icon name={link.icon} className="text-[20px]!" />
                   {link.label}
                 </Button>
               </li>

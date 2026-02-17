@@ -12,7 +12,7 @@ export default function FigmaEditCard({
     <div
       {...props}
       className={twMerge(
-        "relative border-2 border-secondary-base",
+        "relative border-2 border-secondary-base py-2",
         props.className,
       )}
     >
