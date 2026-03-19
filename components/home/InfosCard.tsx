@@ -27,7 +27,7 @@ export default async function InfosCard() {
             alt="Athena"
             width={100}
             height={100}
-            className="absolute -bottom-1 right-8 select-none"
+            className="absolute -bottom-1 right-8 select-none w-24 h-auto"
           />
         </div>
       </div>
