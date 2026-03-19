@@ -7,7 +7,7 @@ import Cursor from "@/components/Cursor";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
 import ProjectsCard from "@/components/home/ProjectsCard";
-// import Spline from "@splinetool/react-spline/next";
+import Spline from "@splinetool/react-spline/next";
 
 export default async function Home() {
   const payload = await getPayload({ config });
@@ -37,10 +37,10 @@ export default async function Home() {
 
   return (
     <div className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16">
-      {/* <Spline
+      <Spline
         scene="https://prod.spline.design/pBFDqKeRoRidMcD9/scene.splinecode"
         className="absolute top-0 left-0 w-full h-full -z-10"
-      /> */}
+      />
       <div className="flex flex-col gap-12">
         <Marquee direction="left">{tagsItems}</Marquee>
         <FigmaEditCard className="self-center">
@@ -57,8 +57,10 @@ export default async function Home() {
         </FigmaEditCard>
         <Marquee direction="right">{tagsItems}</Marquee>
       </div>
-      <div className="relative grid grid-cols-[auto_1fr_1fr] gap-8 self-center px-10">
-        <InfosCard />
+      <div className="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
+        <div className="col-span-1 lg:col-span-2 xl:col-span-1">
+          <InfosCard />
+        </div>
         <RecommandationsCard recommandations={recommandations.docs} />
         <ProjectsCard projects={projects.docs} />
       </div>
