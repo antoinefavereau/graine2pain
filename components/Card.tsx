@@ -1,4 +1,7 @@
+"use client";
+
 import { twMerge } from "tailwind-merge";
+import { refractive } from "@hashintel/refractive";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -6,18 +9,24 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function Card({ children, ...props }: CardProps) {
   return (
-    <div
+    <refractive.div
       {...props}
       className={twMerge(
-        "relative isolate rounded-[20px] bg-grey-darkest/30 backdrop-blur-sm",
-        "before:absolute before:inset-0 before:-z-10 before:rounded-[20px] before:p-px before:content-['']",
-        "before:bg-[linear-gradient(to_bottom_right,var(--color-grey-base),var(--color-grey-dark),var(--color-grey-base))]",
-        "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",
-        "before:mask-exclude!",
+        "rounded-[20px]",
+        // "relative isolate bg-grey-darkest/30 backdrop-blur-sm",
+        // "before:absolute before:inset-0 before:-z-10 before:rounded-[20px] before:p-px before:content-['']",
+        // "before:bg-[linear-gradient(to_bottom_right,var(--color-grey-base),var(--color-grey-dark),var(--color-grey-base))]",
+        // "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",
+        // "before:mask-exclude!",
         props.className,
       )}
+      refraction={{
+        radius: 20,
+        blur: 2,
+        bezelWidth: 20,
+      }}
     >
       {children}
-    </div>
+    </refractive.div>
   );
 }
