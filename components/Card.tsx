@@ -2,7 +2,7 @@
 
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { refractive } from "@hashintel/refractive";
+import RefractiveDiv from "@/components/RefractiveDiv";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   ref,
 ) {
   return (
-    <refractive.div
+    <RefractiveDiv
       ref={ref}
       {...props}
       className={twMerge(
@@ -28,11 +28,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       refraction={{
         radius: 20,
         blur: 2,
-        bezelWidth: 20,
+        bezelWidth: 16,
       }}
     >
       {children}
-    </refractive.div>
+    </RefractiveDiv>
   );
 });
 
