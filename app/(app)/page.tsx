@@ -7,8 +7,7 @@ import Cursor from "@/components/Cursor";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
 import ProjectsCard from "@/components/home/ProjectsCard";
-import Spline from "@splinetool/react-spline/next";
-import Image from "next/image";
+import Orb from "@/components/Orb";
 
 export default async function Home() {
   const payload = await getPayload({ config });
@@ -38,16 +37,7 @@ export default async function Home() {
 
   return (
     <div className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16">
-      {/* <Spline
-        scene="https://prod.spline.design/pBFDqKeRoRidMcD9/scene.splinecode"
-        className="absolute top-0 left-0 w-full h-full -z-10"
-      /> */}
-      <Image
-        src="/bg.jpg"
-        alt="Background"
-        fill
-        className="absolute top-0 left-0 w-full h-full -z-10 object-cover"
-      />
+      <Orb />
       <div className="flex flex-col gap-12">
         <Marquee direction="left">{tagsItems}</Marquee>
         <FigmaEditCard className="self-center">
