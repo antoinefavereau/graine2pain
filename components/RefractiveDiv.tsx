@@ -14,7 +14,7 @@ interface RefractiveDivProps extends HTMLAttributes<HTMLDivElement> {
 export default function RefractiveDiv({
   children,
   ...props
-}: RefractiveDivProps) {
+}: Readonly<RefractiveDivProps>) {
   const [Component, setComponent] = useState<any>(null);
 
   useEffect(() => {
