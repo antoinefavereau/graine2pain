@@ -19,9 +19,9 @@ export default function Card({ children, ...props }: CardProps) {
         props.className,
       )}
       refraction={{
-        radius: 20,
-        blur: 2,
-        bezelWidth: 16,
+        radius: 40,
+        blur: 6,
+        bezelWidth: 32,
       }}
     >
       {children}
