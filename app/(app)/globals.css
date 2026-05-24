@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url("/fonts/material-symbols-outlined.woff2") format("woff2");
+}
+
 :root {
   --primary-lighter: #e6fbf2;
   --primary-light: #a8f1ce;
@@ -127,7 +135,7 @@ body {
 
 @layer components {
   .material-symbols-outlined {
-    font-family: "Material Symbols Outlined";
+    font-family: "Material Symbols Outlined", sans-serif;
     font-weight: normal;
     font-style: normal;
     display: inline-block;

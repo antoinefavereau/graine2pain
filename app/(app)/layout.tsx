@@ -23,8 +23,11 @@ export default function RootLayout({
     <html lang="fr">
       <head>
         <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+          href="/fonts/material-symbols-outlined.woff2"
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
