@@ -2,12 +2,11 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import Card from "@/components/Card";
 import Marquee from "@/components/Marquee";
-import FigmaEditCard from "@/components/FigmaEditCard";
-import Cursor from "@/components/Cursor";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
 import ProjectsCard from "@/components/home/ProjectsCard";
 import Orb from "@/components/Orb";
+import HeroIntro from "@/components/home/HeroIntro";
 
 export default async function Home() {
   const payload = await getPayload({ config });
@@ -40,18 +39,7 @@ export default async function Home() {
       <Orb />
       <div className="flex flex-col gap-12">
         <Marquee direction="left">{tagsItems}</Marquee>
-        <FigmaEditCard className="self-center">
-          <h1 className="text-7xl font-extralight text-center">
-            Bienvenue dans mon{" "}
-            <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
-              portfolio
-            </span>
-          </h1>
-          <Cursor
-            title="Moreau Athéna"
-            className="absolute bottom-[-20px] right-[80px]"
-          />
-        </FigmaEditCard>
+        <HeroIntro />
         <Marquee direction="right">{tagsItems}</Marquee>
       </div>
       <div className="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
