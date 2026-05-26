@@ -28,7 +28,11 @@ function Model() {
 
   return (
     <group ref={mouseRef}>
-      <group ref={spinRef} position={[0, -3, 0]} rotation={[0, -Math.PI / 2, 0]}>
+      <group
+        ref={spinRef}
+        position={[0, -3, 0]}
+        rotation={[0, -Math.PI / 2, 0]}
+      >
         <primitive object={scene} scale={0.9} />
       </group>
     </group>
@@ -47,7 +51,7 @@ export default function Orb() {
   }, []);
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full -z-10 pointer-events-none">
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
       <Canvas camera={CAMERA}>
         {/* On crée un environnement "noir" mais avec une source de lumière centrale qui se reflète */}
         <Environment resolution={256}>
@@ -61,17 +65,17 @@ export default function Orb() {
             />
           </group>
         </Environment>
-        
+
         <Suspense fallback={null}>
           <Model />
         </Suspense>
 
         {/* Effet de Bloom pour le halo lumineux */}
         <EffectComposer>
-          <Bloom 
-            luminanceThreshold={1} 
-            mipmapBlur 
-            intensity={1.0} 
+          <Bloom
+            luminanceThreshold={1}
+            mipmapBlur
+            intensity={1.0}
             radius={0.4}
           />
         </EffectComposer>

@@ -35,7 +35,7 @@ export default async function Home() {
   ));
 
   return (
-    <div className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16">
+    <div className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16 bg-black">
       <Orb />
       <div className="flex flex-col gap-12">
         <Marquee direction="left">{tagsItems}</Marquee>
