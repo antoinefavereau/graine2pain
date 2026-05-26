@@ -67,6 +67,20 @@ export default function Orb() {
               color="#7b3fc8"
               position={[0, 0, -1]}
             />
+            <Lightformer
+              form="circle"
+              intensity={0.5}
+              scale={2.4}
+              color="#ffffff"
+              position={[-2.2, 2.4, -1]}
+            />
+            <Lightformer
+              form="circle"
+              intensity={0.5}
+              scale={2.4}
+              color="#ffffff"
+              position={[2.2, 2.4, -1]}
+            />
           </group>
         </Environment>
 
