@@ -2,10 +2,10 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-interface MarqueeProps {
+interface MarqueeProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   direction?: "left" | "right";
   pauseOnHover?: boolean;
@@ -14,14 +14,18 @@ interface MarqueeProps {
   duration?: number; // Duration of one loop cycle in seconds.
 }
 
-export default function Marquee({
-  children,
-  direction = "left",
-  pauseOnHover = true,
-  className,
-  repeat = 4,
-  duration = 20,
-}: MarqueeProps) {
+const Marquee = forwardRef<HTMLDivElement, MarqueeProps>(function Marquee(
+  {
+    children,
+    direction = "left",
+    pauseOnHover = true,
+    className,
+    repeat = 4,
+    duration = 20,
+    ...props
+  },
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
@@ -49,7 +53,10 @@ export default function Marquee({
         repeat: -1,
       });
     },
-    { scope: containerRef, dependencies: [direction, duration, repeat] },
+    {
+      scope: containerRef,
+      dependencies: [direction, duration, repeat],
+    },
   );
 
   const handleMouseEnter = () => {
@@ -74,12 +81,20 @@ export default function Marquee({
 
   return (
     <div
-      ref={containerRef}
-      className="overflow-hidden w-full select-none"
+      ref={(el) => {
+        containerRef.current = el;
+        if (typeof ref === "function") {
+          ref(el);
+        } else if (ref) {
+          ref.current = el;
+        }
+      }}
+      {...props}
+      className={twMerge("overflow-hidden w-full select-none", className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div ref={wrapperRef} className={twMerge("flex w-fit gap-5", className)}>
+      <div ref={wrapperRef} className="flex w-fit gap-5">
         {Array.from({ length: repeat }).map((_, i) => (
           <div key={i} className="contents">
             {children}
@@ -88,4 +103,6 @@ export default function Marquee({
       </div>
     </div>
   );
-}
+});
+
+export default Marquee;

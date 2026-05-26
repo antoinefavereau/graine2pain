@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import Image from "next/image";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -26,14 +26,18 @@ interface RecommandationsCardProps {
   recommandations: Recommandation[];
 }
 
-export default function RecommandationsCard({
-  recommandations,
-}: RecommandationsCardProps) {
+const RecommandationsCard = forwardRef<
+  HTMLDivElement,
+  RecommandationsCardProps
+>(function RecommandationsCard({ recommandations }, ref) {
   const [prevEl, setPrevEl] = useState<HTMLElement | null>(null);
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
   return (
-    <div className="relative grid grid-rows-[1fr_auto] gap-5 p-5 bg-grey-dark rounded-[20px]">
+    <div
+      ref={ref}
+      className="relative grid grid-rows-[1fr_auto] gap-5 p-5 bg-grey-dark rounded-[20px]"
+    >
       <Swiper
         modules={[Navigation]}
         navigation={{
@@ -86,4 +90,6 @@ export default function RecommandationsCard({
       </div>
     </div>
   );
-}
+});
+
+export default RecommandationsCard;

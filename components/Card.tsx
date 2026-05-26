@@ -1,12 +1,17 @@
+import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export default function Card({ children, ...props }: CardProps) {
+const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  { children, className, ...props },
+  ref,
+) {
   return (
     <div
+      ref={ref}
       {...props}
       className={twMerge(
         "relative isolate rounded-[20px] bg-grey-darkest/30 backdrop-blur-sm",
@@ -14,10 +19,12 @@ export default function Card({ children, ...props }: CardProps) {
         "before:bg-[linear-gradient(to_bottom_right,var(--color-grey-base),var(--color-grey-dark),var(--color-grey-base))]",
         "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",
         "before:mask-exclude!",
-        props.className,
+        className,
       )}
     >
       {children}
     </div>
   );
-}
+});
+
+export default Card;

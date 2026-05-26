@@ -1,22 +1,25 @@
+"use client";
+
 import Image from "next/image";
+import { forwardRef } from "react";
 
 import { Fragment } from "react/jsx-runtime";
-import { getPayload } from "payload";
 
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Icon from "@/components/Icon";
-import config from "@payload-config";
+import type { Info } from "@/payload-types";
 
-export default async function InfosCard() {
-  const payload = await getPayload({ config });
-  const infos = await payload.find({
-    collection: "info" as any,
-    sort: "order",
-  });
+interface InfosCardProps {
+  infos: Info[];
+}
 
+const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
+  { infos },
+  ref,
+) {
   return (
-    <Card className="flex flex-col gap-5 p-5">
+    <Card ref={ref} className="flex flex-col gap-5 p-5">
       <div className="flex items-start gap-6">
         <Button variant="outline" color="grey" onlyIcon href="/about">
           <Icon name="arrow_outward" />
@@ -32,7 +35,7 @@ export default async function InfosCard() {
         </div>
       </div>
       <ul className="flex flex-col gap-3">
-        {infos.docs?.map((info, index) => (
+        {infos.map((info, index) => (
           <Fragment key={info.id || index}>
             <li className="flex justify-between items-center gap-8">
               <div className="flex items-center gap-2">
@@ -41,12 +44,12 @@ export default async function InfosCard() {
               </div>
               <p className="text-sm font-light">{info.valeur}</p>
             </li>
-            {infos.docs && index < infos.docs.length - 1 && (
-              <hr className="border-grey-medium" />
-            )}
+            {index < infos.length - 1 && <hr className="border-grey-medium" />}
           </Fragment>
         ))}
       </ul>
     </Card>
   );
-}
+});
+
+export default InfosCard;

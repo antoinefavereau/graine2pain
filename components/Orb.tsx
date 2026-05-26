@@ -3,7 +3,7 @@
 import { Group } from "three";
 import { useGLTF, Environment, Lightformer } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense, useEffect, useRef } from "react";
+import { forwardRef, Suspense, useEffect, useRef } from "react";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
 const mouse = { x: 0, y: 0 };
@@ -39,7 +39,7 @@ function Model() {
   );
 }
 
-export default function Orb() {
+const Orb = forwardRef<HTMLDivElement, {}>(function Orb(_, ref) {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -51,7 +51,10 @@ export default function Orb() {
   }, []);
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+    <div
+      ref={ref}
+      className="absolute top-0 left-0 w-full h-full pointer-events-none"
+    >
       <div
         aria-hidden="true"
         className="absolute inset-1/6 rounded-full bg-[#7b3fc830] blur-3xl"
@@ -100,4 +103,6 @@ export default function Orb() {
       </Canvas>
     </div>
   );
-}
+});
+
+export default Orb;
