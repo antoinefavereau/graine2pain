@@ -52,6 +52,10 @@ export default function Orb() {
 
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <div
+        aria-hidden="true"
+        className="absolute inset-1/6 rounded-full bg-[#7b3fc830] blur-3xl"
+      />
       <Canvas camera={CAMERA}>
         {/* On crée un environnement "noir" mais avec une source de lumière centrale qui se reflète */}
         <Environment resolution={256}>
