@@ -8,6 +8,17 @@
   src: url("/fonts/material-symbols-outlined.woff2") format("woff2");
 }
 
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
 :root {
   --primary-lighter: #e6fbf2;
   --primary-light: #a8f1ce;
