@@ -41,6 +41,7 @@ export default function RecommandationsCard({
           nextEl,
         }}
         loop
+        spaceBetween={32}
         className="w-full"
       >
         {recommandations.map((recommandation) => (
