@@ -73,7 +73,7 @@ export default function Navbar() {
 
   return (
     <div className="fixed left-0 right-0 top-0 flex justify-center p-10 z-10">
-      <Card ref={navRef} className="p-2">
+      <Card ref={navRef} isRefractive className="p-2">
         <nav>
           <ul className="flex gap-5">
             {links.map((link, index) => (

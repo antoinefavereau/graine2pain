@@ -11,6 +11,9 @@ importers:
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.15.0)(react@19.2.3)
+      '@hashintel/refractive':
+        specifier: ^0.0.3
+        version: 0.0.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@payloadcms/db-postgres':
         specifier: 3.79.0
         version: 3.79.0(payload@3.79.0(graphql@16.14.0)(typescript@5.9.3))
@@ -914,6 +917,12 @@ packages:
     peerDependencies:
       gsap: ^3.12.5
       react: '>=17'
+
+  '@hashintel/refractive@0.0.3':
+    resolution: {integrity: sha512-f/7QK+6IiHyivl1RDHXme5VGhxindl7yOxU8MwU+gKqiYVgMjK0kiNPI/Rnc/EpHSPM6NZ9gkwwqdQ/lUz0dhQ==}
+    peerDependencies:
+      react: ^19.0.0
+      react-dom: ^19.0.0
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -5037,6 +5046,11 @@ snapshots:
     dependencies:
       gsap: 3.15.0
       react: 19.2.3
+
+  '@hashintel/refractive@0.0.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
 
   '@humanfs/core@0.19.2':
     dependencies:
