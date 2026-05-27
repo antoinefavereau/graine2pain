@@ -14,7 +14,7 @@ interface ProjectsCardProps {
 const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
   function ProjectsCard({ projects }, ref) {
     return (
-      <Card ref={ref} className="flex flex-col gap-5 p-5 pb-2">
+      <Card ref={ref} isRefractive className="flex flex-col gap-5 p-5 pb-2">
         <div className="flex justify-between align-top">
           <h2 className="text-xl font-bold">Derniers projets</h2>
           <Button variant="outline" color="grey" onlyIcon href="/projects">
