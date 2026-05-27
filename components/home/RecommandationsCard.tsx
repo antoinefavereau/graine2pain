@@ -24,18 +24,20 @@ interface Recommandation {
 
 interface RecommandationsCardProps {
   recommandations: Recommandation[];
+  style?: React.CSSProperties;
 }
 
 const RecommandationsCard = forwardRef<
   HTMLDivElement,
   RecommandationsCardProps
->(function RecommandationsCard({ recommandations }, ref) {
+>(function RecommandationsCard({ recommandations, style }, ref) {
   const [prevEl, setPrevEl] = useState<HTMLElement | null>(null);
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
   return (
     <div
       ref={ref}
+      style={style}
       className="relative grid grid-rows-[1fr_auto] gap-5 p-5 bg-grey-dark rounded-[20px]"
     >
       <Swiper

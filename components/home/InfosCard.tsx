@@ -12,14 +12,20 @@ import type { Info } from "@/payload-types";
 
 interface InfosCardProps {
   infos: Info[];
+  wrapperStyle?: React.CSSProperties;
 }
 
 const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
-  { infos },
+  { infos, wrapperStyle },
   ref,
 ) {
   return (
-    <Card ref={ref} isRefractive className="flex flex-col gap-5 p-5">
+    <Card
+      ref={ref}
+      isRefractive
+      wrapperStyle={wrapperStyle}
+      className="flex flex-col gap-5 p-5"
+    >
       <div className="flex items-start gap-6">
         <Button variant="outline" color="grey" onlyIcon href="/about">
           <Icon name="arrow_outward" />

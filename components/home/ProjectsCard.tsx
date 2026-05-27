@@ -9,12 +9,18 @@ import type { Project } from "@/types/Project";
 
 interface ProjectsCardProps {
   projects: Project[];
+  wrapperStyle?: React.CSSProperties;
 }
 
 const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
-  function ProjectsCard({ projects }, ref) {
+  function ProjectsCard({ projects, wrapperStyle }, ref) {
     return (
-      <Card ref={ref} isRefractive className="flex flex-col gap-5 p-5 pb-2">
+      <Card
+        ref={ref}
+        isRefractive
+        wrapperStyle={wrapperStyle}
+        className="flex flex-col gap-5 p-5 pb-2"
+      >
         <div className="flex justify-between align-top">
           <h2 className="text-xl font-bold">Derniers projets</h2>
           <Button variant="outline" color="grey" onlyIcon href="/projects">
