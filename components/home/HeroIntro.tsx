@@ -76,6 +76,7 @@ export default function HeroIntro() {
       {
         opacity: 1,
         duration: 0.45,
+        clearProps: "opacity,transform",
       },
       "-=0.2",
     );
@@ -119,6 +120,7 @@ export default function HeroIntro() {
     timeline.to(cursorElement, {
       scale: 1,
       duration: 0.08,
+      clearProps: "opacity,transform",
     });
 
     timeline.add(() => {
@@ -132,7 +134,11 @@ export default function HeroIntro() {
 
   return (
     <div ref={heroRef} className="relative flex justify-center px-5">
-      <div ref={cardWrapperRef} className="will-change-transform">
+      <div
+        ref={cardWrapperRef}
+        style={{ opacity: 0, transform: "translateY(16px)" }}
+        className="will-change-transform"
+      >
         <FigmaEditCard
           className="self-center"
           showBorder={isTyping || hasTyped}
@@ -151,7 +157,7 @@ export default function HeroIntro() {
             <span
               aria-hidden="true"
               className={twMerge(
-                "w-[2px] h-[1em] bg-current inline-block mx-1 align-middle",
+                "w-0.5 h-[1em] bg-current inline-block mx-1 align-middle",
                 !isTyping && "animate-[blink_1.5s_steps(2)_infinite]",
                 (!hasStarted || hasFinished) && "opacity-0!",
               )}
@@ -162,6 +168,7 @@ export default function HeroIntro() {
 
       <div
         ref={cursorWrapperRef}
+        style={{ opacity: 0, transform: "scale(0.85)" }}
         className="absolute bottom-0 right-40 will-change-transform"
       >
         <Cursor title="Moreau Athéna" />

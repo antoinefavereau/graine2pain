@@ -7,14 +7,23 @@ import RefractiveDiv from "@/components/RefractiveDiv";
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   isRefractive?: boolean;
   children: React.ReactNode;
+  wrapperClassName?: string;
+  wrapperStyle?: React.CSSProperties;
 }
 
 const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { isRefractive = false, children, className, ...props },
+  {
+    isRefractive = false,
+    children,
+    className,
+    wrapperClassName,
+    wrapperStyle,
+    ...props
+  },
   ref,
 ) {
   return (
-    <div ref={ref}>
+    <div ref={ref} className={wrapperClassName} style={wrapperStyle}>
       {isRefractive ? (
         <RefractiveDiv
           {...props}

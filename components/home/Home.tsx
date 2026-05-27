@@ -79,27 +79,47 @@ export default function Home({
       ref={rootRef}
       className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16 bg-black"
     >
-      <Orb ref={orbRef} />
+      <Orb
+        ref={orbRef}
+        style={{ opacity: 0, transform: "translateY(16px)" }}
+      />
 
       <div className="flex flex-col gap-12">
-        <Marquee ref={marqueeTopRef} direction="left">
+        <Marquee
+          ref={marqueeTopRef}
+          direction="left"
+          style={{ opacity: 0, transform: "translateY(16px)" }}
+        >
           {tagsItems}
         </Marquee>
 
         <HeroIntro />
 
-        <Marquee ref={marqueeBottomRef} direction="right">
+        <Marquee
+          ref={marqueeBottomRef}
+          direction="right"
+          style={{ opacity: 0, transform: "translateY(16px)" }}
+        >
           {tagsItems}
         </Marquee>
       </div>
 
       <div className="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
-        <InfosCard ref={infosRef} infos={infos} />
+        <InfosCard
+          ref={infosRef}
+          infos={infos}
+          wrapperStyle={{ opacity: 0, transform: "translateY(16px)" }}
+        />
         <RecommandationsCard
           ref={recommandationsRef}
           recommandations={recommandations}
+          style={{ opacity: 0, transform: "translateY(16px)" }}
         />
-        <ProjectsCard ref={projectsRef} projects={projects} />
+        <ProjectsCard
+          ref={projectsRef}
+          projects={projects}
+          wrapperStyle={{ opacity: 0, transform: "translateY(16px)" }}
+        />
       </div>
     </div>
   );

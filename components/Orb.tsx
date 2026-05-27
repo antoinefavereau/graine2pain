@@ -39,70 +39,76 @@ function Model() {
   );
 }
 
-const Orb = forwardRef<HTMLDivElement, {}>(function Orb(_, ref) {
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
-    };
+const Orb = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  function Orb({ className, style, ...props }, ref) {
+    useEffect(() => {
+      const handleMouseMove = (e: MouseEvent) => {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
+      };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+      window.addEventListener("mousemove", handleMouseMove);
+      return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
 
-  return (
-    <div
-      ref={ref}
-      className="absolute top-0 left-0 w-full h-full pointer-events-none"
-    >
+    return (
       <div
-        aria-hidden="true"
-        className="absolute inset-1/6 rounded-full bg-[#7b3fc830] blur-3xl"
-      />
-      <Canvas camera={CAMERA}>
-        {/* On crée un environnement "noir" mais avec une source de lumière centrale qui se reflète */}
-        <Environment resolution={256}>
-          <group rotation={[-Math.PI / 2, 0, 0]}>
-            <Lightformer
-              form="circle"
-              intensity={20}
-              scale={3}
-              color="#7b3fc8"
-              position={[0, 0, -1]}
-            />
-            <Lightformer
-              form="circle"
-              intensity={0.5}
-              scale={2.4}
-              color="#ffffff"
-              position={[-2.2, 2.4, -1]}
-            />
-            <Lightformer
-              form="circle"
-              intensity={0.5}
-              scale={2.4}
-              color="#ffffff"
-              position={[2.2, 2.4, -1]}
-            />
-          </group>
-        </Environment>
+        ref={ref}
+        {...props}
+        className={`absolute top-0 left-0 w-full h-full pointer-events-none${
+          className ? ` ${className}` : ""
+        }`}
+        style={style}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-1/6 rounded-full bg-[#7b3fc830] blur-3xl"
+        />
+        <Canvas camera={CAMERA}>
+          {/* On crée un environnement "noir" mais avec une source de lumière centrale qui se reflète */}
+          <Environment resolution={256}>
+            <group rotation={[-Math.PI / 2, 0, 0]}>
+              <Lightformer
+                form="circle"
+                intensity={20}
+                scale={3}
+                color="#7b3fc8"
+                position={[0, 0, -1]}
+              />
+              <Lightformer
+                form="circle"
+                intensity={0.5}
+                scale={2.4}
+                color="#ffffff"
+                position={[-2.2, 2.4, -1]}
+              />
+              <Lightformer
+                form="circle"
+                intensity={0.5}
+                scale={2.4}
+                color="#ffffff"
+                position={[2.2, 2.4, -1]}
+              />
+            </group>
+          </Environment>
 
-        <Suspense fallback={null}>
-          <Model />
-        </Suspense>
+          <Suspense fallback={null}>
+            <Model />
+          </Suspense>
 
-        {/* Effet de Bloom pour le halo lumineux */}
-        <EffectComposer>
-          <Bloom
-            luminanceThreshold={1}
-            mipmapBlur
-            intensity={1.0}
-            radius={0.4}
-          />
-        </EffectComposer>
-      </Canvas>
-    </div>
-  );
-});
+          {/* Effet de Bloom pour le halo lumineux */}
+          <EffectComposer>
+            <Bloom
+              luminanceThreshold={1}
+              mipmapBlur
+              intensity={1.0}
+              radius={0.4}
+            />
+          </EffectComposer>
+        </Canvas>
+      </div>
+    );
+  },
+);
 
 export default Orb;
