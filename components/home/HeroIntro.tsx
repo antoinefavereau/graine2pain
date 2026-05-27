@@ -5,16 +5,22 @@ import { gsap } from "gsap";
 
 import FigmaEditCard from "@/components/FigmaEditCard";
 import Cursor from "@/components/Cursor";
+import { twMerge } from "tailwind-merge";
 
 const HERO_TEXT = "Bienvenue dans mon portfolio";
 const HERO_PREFIX = "Bienvenue dans mon ";
 const HERO_ACCENT = "portfolio";
+const TYPING_DELAY = 0.12;
 
 export default function HeroIntro() {
   const heroRef = useRef<HTMLDivElement>(null);
   const cardWrapperRef = useRef<HTMLDivElement>(null);
   const cursorWrapperRef = useRef<HTMLDivElement>(null);
   const [displayedText, setDisplayedText] = useState("");
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false);
+  const [hasFinished, setHasFinished] = useState(false);
 
   useLayoutEffect(() => {
     const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -70,22 +76,55 @@ export default function HeroIntro() {
       {
         opacity: 1,
         duration: 0.45,
+        clearProps: "opacity,transform",
       },
       "-=0.2",
     );
 
-    timeline.add(() => setDisplayedText(""), "+=0.12");
+    timeline.add(() => {
+      setHasStarted(true);
+    }, "-=0.2");
+
+    timeline.add(() => {
+      setDisplayedText("");
+      setIsTyping(true);
+      setHasTyped(false);
+    }, "+=2");
 
     HERO_TEXT.split("").forEach((_, index) => {
       timeline.add(() => {
         setDisplayedText(HERO_TEXT.slice(0, index + 1));
-      }, "+=0.05");
+      }, `+=${TYPING_DELAY}`);
+    });
+
+    timeline.add(() => {
+      setIsTyping(false);
+      setHasTyped(true);
     });
 
     timeline.to(cursorElement, {
       x: 0,
       y: 0,
       duration: 0.85,
+    });
+
+    timeline.to(
+      cursorElement,
+      {
+        scale: 0.9,
+        duration: 0.08,
+      },
+      "+=1",
+    );
+
+    timeline.to(cursorElement, {
+      scale: 1,
+      duration: 0.08,
+      clearProps: "opacity,transform",
+    });
+
+    timeline.add(() => {
+      setHasFinished(true);
     });
 
     return () => {
@@ -95,17 +134,17 @@ export default function HeroIntro() {
 
   return (
     <div ref={heroRef} className="relative flex justify-center px-5">
-      <div ref={cardWrapperRef} className="will-change-transform">
-        <FigmaEditCard className="self-center">
+      <div
+        ref={cardWrapperRef}
+        style={{ opacity: 0, transform: "translateY(16px)" }}
+        className="will-change-transform"
+      >
+        <FigmaEditCard
+          className="self-center"
+          showBorder={isTyping || hasTyped}
+          showCorners={hasFinished}
+        >
           <h1 className="text-7xl font-extralight text-center">
-            {displayedText.length === 0 && (
-              <span
-                aria-hidden="true"
-                className="pointer-events-none select-none opacity-0"
-              >
-                p
-              </span>
-            )}
             {displayedText.slice(0, HERO_PREFIX.length)}
             {displayedText.length > HERO_PREFIX.length && (
               <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
@@ -115,12 +154,21 @@ export default function HeroIntro() {
                 )}
               </span>
             )}
+            <span
+              aria-hidden="true"
+              className={twMerge(
+                "w-0.5 h-[1em] bg-current inline-block mx-1 align-middle",
+                !isTyping && "animate-[blink_1.5s_steps(2)_infinite]",
+                (!hasStarted || hasFinished) && "opacity-0!",
+              )}
+            />
           </h1>
         </FigmaEditCard>
       </div>
 
       <div
         ref={cursorWrapperRef}
+        style={{ opacity: 0, transform: "scale(0.85)" }}
         className="absolute bottom-0 right-40 will-change-transform"
       >
         <Cursor title="Moreau Athéna" />

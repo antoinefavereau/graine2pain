@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@hashintel/refractive": "^0.0.3",
     "@payloadcms/db-postgres": "3.79.0",
     "@payloadcms/email-resend": "3.79.0",
     "@payloadcms/next": "3.79.0",
