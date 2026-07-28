@@ -17,7 +17,6 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
     return (
       <Card
         ref={ref}
-        isRefractive
         wrapperStyle={wrapperStyle}
         className="flex flex-col gap-5 p-5 pb-2"
       >
