@@ -18,7 +18,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       <div
         {...props}
         className={twMerge(
-          "relative isolate bg-grey-darkest/30 backdrop-blur-sm",
+          "relative isolate bg-grey-darkest/30 backdrop-blur-sm rounded-[20px]",
           "before:absolute before:inset-0 before:-z-10 before:rounded-[20px] before:p-px before:content-['']",
           "before:bg-[linear-gradient(to_bottom_right,var(--color-grey-base),var(--color-grey-dark),var(--color-grey-base))]",
           "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",
