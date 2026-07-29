@@ -5,16 +5,15 @@ import { twMerge } from "tailwind-merge";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  wrapperClassName?: string;
   wrapperStyle?: React.CSSProperties;
 }
 
 const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { children, className, wrapperClassName, wrapperStyle, ...props },
+  { children, className, wrapperStyle, ...props },
   ref,
 ) {
   return (
-    <div ref={ref} className={wrapperClassName} style={wrapperStyle}>
+    <div ref={ref} style={wrapperStyle}>
       <div
         {...props}
         className={twMerge(

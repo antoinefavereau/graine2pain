@@ -1,8 +1,10 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 import type { Project } from "@/types/Project";
+import BlockRenderer from "@/components/projects/blocks/BlockRenderer";
+import ProjectHero from "@/components/projects/ProjectHero";
 
-export default async function Project({
+export default async function ProjectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -16,9 +18,13 @@ export default async function Project({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-5">
-      <h1 className="text-7xl font-bold">Projet "{project.title}"</h1>
-      <p className="text-2xl font-light">Page bientôt disponible...</p>
-    </div>
+    <>
+      <ProjectHero project={project} />
+      {project.blocks &&
+        project.blocks.length > 0 &&
+        project.blocks.map((block, i) => (
+          <BlockRenderer key={block.id ?? i} block={block} />
+        ))}
+    </>
   );
 }

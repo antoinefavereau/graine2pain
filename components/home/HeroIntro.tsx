@@ -7,12 +7,14 @@ import FigmaEditCard from "@/components/FigmaEditCard";
 import Cursor from "@/components/Cursor";
 import { twMerge } from "tailwind-merge";
 
-const HERO_TEXT = "Bienvenue dans mon portfolio";
-const HERO_PREFIX = "Bienvenue dans mon ";
-const HERO_ACCENT = "portfolio";
 const TYPING_DELAY = 0.12;
 
-export default function HeroIntro() {
+export interface HeroIntroProps {
+  title: string;
+  titleHighlight?: string;
+}
+
+export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cardWrapperRef = useRef<HTMLDivElement>(null);
   const cursorWrapperRef = useRef<HTMLDivElement>(null);
@@ -21,6 +23,10 @@ export default function HeroIntro() {
   const [isTyping, setIsTyping] = useState(false);
   const [hasTyped, setHasTyped] = useState(false);
   const [hasFinished, setHasFinished] = useState(false);
+
+  const heroPrefix = titleHighlight ? `${title} ` : title;
+  const heroAccent = titleHighlight ?? "";
+  const heroText = `${heroPrefix}${heroAccent}`;
 
   useLayoutEffect(() => {
     const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -91,9 +97,9 @@ export default function HeroIntro() {
       setHasTyped(false);
     }, "+=2");
 
-    HERO_TEXT.split("").forEach((_, index) => {
+    heroText.split("").forEach((_, index) => {
       timeline.add(() => {
-        setDisplayedText(HERO_TEXT.slice(0, index + 1));
+        setDisplayedText(heroText.slice(0, index + 1));
       }, `+=${TYPING_DELAY}`);
     });
 
@@ -130,7 +136,7 @@ export default function HeroIntro() {
     return () => {
       timeline.kill();
     };
-  }, []);
+  }, [heroText]);
 
   return (
     <div ref={heroRef} className="relative flex justify-center px-5">
@@ -145,12 +151,12 @@ export default function HeroIntro() {
           showCorners={hasFinished}
         >
           <h1 className="text-7xl font-extralight text-center">
-            {displayedText.slice(0, HERO_PREFIX.length)}
-            {displayedText.length > HERO_PREFIX.length && (
+            {displayedText.slice(0, heroPrefix.length)}
+            {displayedText.length > heroPrefix.length && (
               <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
                 {displayedText.slice(
-                  HERO_PREFIX.length,
-                  HERO_PREFIX.length + HERO_ACCENT.length,
+                  heroPrefix.length,
+                  heroPrefix.length + heroAccent.length,
                 )}
               </span>
             )}

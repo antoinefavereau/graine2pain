@@ -229,8 +229,107 @@ export interface Project {
   id: number;
   order?: number | null;
   title: string;
-  description: string;
-  image: number | Media;
+  titleHighlight?: string | null;
+  subTitle: string;
+  /**
+   * 1 image : affichage plein écran. 3 images : affichées dans des mockups téléphone.
+   */
+  images: {
+    image: number | Media;
+    id?: string | null;
+  }[];
+  blocks?:
+    | (
+        | {
+            label?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            image?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textBlock';
+          }
+        | {
+            label?: string | null;
+            title: string;
+            titleHighlight?: string | null;
+            description?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            ctaIcon?: (number | null) | Media;
+            stats?:
+              | {
+                  label: string;
+                  value: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'splitStatsBlock';
+          }
+        | {
+            label?: string | null;
+            title: string;
+            titleHighlight?: string | null;
+            description?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            ctaIcon?: (number | null) | Media;
+            medias?:
+              | {
+                  image: number | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'splitMediaBlock';
+          }
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -406,8 +505,67 @@ export interface RecommandationsSelect<T extends boolean = true> {
 export interface ProjectsSelect<T extends boolean = true> {
   order?: T;
   title?: T;
-  description?: T;
-  image?: T;
+  titleHighlight?: T;
+  subTitle?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  blocks?:
+    | T
+    | {
+        textBlock?:
+          | T
+          | {
+              label?: T;
+              content?: T;
+              image?: T;
+              id?: T;
+              blockName?: T;
+            };
+        splitStatsBlock?:
+          | T
+          | {
+              label?: T;
+              title?: T;
+              titleHighlight?: T;
+              description?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
+              ctaIcon?: T;
+              stats?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        splitMediaBlock?:
+          | T
+          | {
+              label?: T;
+              title?: T;
+              titleHighlight?: T;
+              description?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
+              ctaIcon?: T;
+              medias?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

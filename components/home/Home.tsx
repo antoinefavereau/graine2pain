@@ -8,7 +8,7 @@ import Orb from "@/components/Orb";
 import HeroIntro from "@/components/home/HeroIntro";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
-import ProjectsCard from "@/components/home/ProjectsCard";
+import ProjectCard from "@/components/home/ProjectsCard";
 
 interface HomeProps {
   tags: any[];
@@ -67,7 +67,7 @@ export default function Home({
       <Orb ref={orbRef} style={{ opacity: 0, transform: "translateY(16px)" }} />
 
       <div className="my-auto">
-        <HeroIntro />
+        <HeroIntro title="Bienvenue dans mon" titleHighlight="portfolio" />
       </div>
 
       <div className="relative  grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
@@ -81,7 +81,7 @@ export default function Home({
           recommandations={recommandations}
           style={{ opacity: 0, transform: "translateY(16px)" }}
         />
-        <ProjectsCard
+        <ProjectCard
           ref={projectsRef}
           projects={projects}
           wrapperStyle={{ opacity: 0, transform: "translateY(16px)" }}
