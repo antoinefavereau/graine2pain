@@ -4,13 +4,11 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-import Card from "@/components/Card";
-import Marquee from "@/components/Marquee";
 import Orb from "@/components/Orb";
 import HeroIntro from "@/components/home/HeroIntro";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
-import ProjectsCard from "@/components/home/ProjectsCard";
+import ProjectCard from "@/components/home/ProjectsCard";
 
 interface HomeProps {
   tags: any[];
@@ -31,8 +29,6 @@ export default function Home({
 
   const rootRef = useRef<HTMLDivElement>(null);
   const orbRef = useRef<HTMLDivElement>(null);
-  const marqueeTopRef = useRef<HTMLDivElement>(null);
-  const marqueeBottomRef = useRef<HTMLDivElement>(null);
   const infosRef = useRef<HTMLDivElement>(null);
   const recommandationsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
@@ -41,8 +37,6 @@ export default function Home({
     () => {
       const elements = [
         orbRef.current,
-        marqueeTopRef.current,
-        marqueeBottomRef.current,
         infosRef.current,
         recommandationsRef.current,
         projectsRef.current,
@@ -65,46 +59,18 @@ export default function Home({
     { scope: rootRef },
   );
 
-  const tagsItems = tags.map((tag: any) => (
-    <Card
-      key={tag.id}
-      className="text-nowrap px-3 py-1.5 text-grey-base text-xs"
-    >
-      {tag.name}
-    </Card>
-  ));
-
   return (
     <div
       ref={rootRef}
       className="relative min-h-screen pt-36 pb-10 flex flex-col justify-between gap-16 bg-black"
     >
-      <Orb
-        ref={orbRef}
-        style={{ opacity: 0, transform: "translateY(16px)" }}
-      />
+      <Orb ref={orbRef} style={{ opacity: 0, transform: "translateY(16px)" }} />
 
-      <div className="flex flex-col gap-12">
-        <Marquee
-          ref={marqueeTopRef}
-          direction="left"
-          style={{ opacity: 0, transform: "translateY(16px)" }}
-        >
-          {tagsItems}
-        </Marquee>
-
-        <HeroIntro />
-
-        <Marquee
-          ref={marqueeBottomRef}
-          direction="right"
-          style={{ opacity: 0, transform: "translateY(16px)" }}
-        >
-          {tagsItems}
-        </Marquee>
+      <div className="my-auto">
+        <HeroIntro title="Bienvenue dans mon" titleHighlight="portfolio" />
       </div>
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
+      <div className="relative  grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-10">
         <InfosCard
           ref={infosRef}
           infos={infos}
@@ -115,7 +81,7 @@ export default function Home({
           recommandations={recommandations}
           style={{ opacity: 0, transform: "translateY(16px)" }}
         />
-        <ProjectsCard
+        <ProjectCard
           ref={projectsRef}
           projects={projects}
           wrapperStyle={{ opacity: 0, transform: "translateY(16px)" }}

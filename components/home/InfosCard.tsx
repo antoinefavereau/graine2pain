@@ -22,7 +22,6 @@ const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
   return (
     <Card
       ref={ref}
-      isRefractive
       wrapperStyle={wrapperStyle}
       className="flex flex-col gap-5 p-5"
     >

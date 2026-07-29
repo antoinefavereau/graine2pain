@@ -127,7 +127,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     );
 
     if (variant === "outline" && color === "grey") {
-      return <Card>{buttonContent}</Card>;
+      return <Card className={props.className}>{buttonContent}</Card>;
     }
 
     return buttonContent;
