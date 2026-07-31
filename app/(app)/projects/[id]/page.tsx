@@ -3,6 +3,8 @@ import config from "@payload-config";
 import type { Project } from "@/types/Project";
 import BlockRenderer from "@/components/projects/blocks/BlockRenderer";
 import ProjectHero from "@/components/projects/ProjectHero";
+import OtherProjectsCarousel from "@/components/projects/OtherProjectsCarousel";
+import { safePayloadFind } from "@/lib/payload";
 
 export default async function ProjectPage({
   params,
@@ -12,10 +14,25 @@ export default async function ProjectPage({
   const { id } = await params;
   const payload = await getPayload({ config });
 
-  const project: Project = await payload.findByID({
-    collection: "projects" as any,
-    id,
-  });
+  const [projectRes, allProjectsRes] = await Promise.all([
+    payload.findByID({
+      collection: "projects" as any,
+      id,
+    }),
+    safePayloadFind(
+      payload,
+      {
+        collection: "projects" as any,
+        sort: "order",
+      },
+      "projects",
+    ),
+  ]);
+
+  const project = projectRes as Project;
+  const otherProjects = (allProjectsRes.docs as unknown as Project[]).filter(
+    (p) => String(p.id) !== String(id),
+  );
 
   return (
     <>
@@ -25,6 +42,7 @@ export default async function ProjectPage({
         project.blocks.map((block, i) => (
           <BlockRenderer key={block.id ?? i} block={block} />
         ))}
+      <OtherProjectsCarousel projects={otherProjects} />
     </>
   );
 }
