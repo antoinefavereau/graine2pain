@@ -15,7 +15,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const hasThree = imgs.length >= 3;
 
   return (
-    <Card>
+    <Card variant="dark">
       <Link
         href={`/projects/${project.id}`}
         className="flex flex-col gap-4 aspect-video p-5 pb-0"
