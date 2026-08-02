@@ -139,7 +139,10 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
   }, [heroText]);
 
   return (
-    <div ref={heroRef} className="relative flex justify-center px-5">
+    <div
+      ref={heroRef}
+      className="relative flex justify-center px-6 sm:px-8 md:px-12"
+    >
       <div
         ref={cardWrapperRef}
         style={{ opacity: 0, transform: "translateY(16px)" }}
@@ -150,7 +153,7 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
           showBorder={isTyping || hasTyped}
           showCorners={hasFinished}
         >
-          <h1 className="text-7xl font-extralight text-center">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extralight text-center whitespace-break-spaces">
             {displayedText.slice(0, heroPrefix.length)}
             {displayedText.length > heroPrefix.length && (
               <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
@@ -175,7 +178,7 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
       <div
         ref={cursorWrapperRef}
         style={{ opacity: 0, transform: "scale(0.85)" }}
-        className="absolute bottom-0 right-40 will-change-transform"
+        className="absolute -bottom-2 right-40 will-change-transform"
       >
         <Cursor title="Moreau Athéna" />
       </div>

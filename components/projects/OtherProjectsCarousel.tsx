@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-import Button from "@/components/Button";
-import Icon from "@/components/Icon";
 import ProjectCard from "@/components/projects/ProjectCard";
 import type { Project } from "@/types/Project";
 
@@ -19,29 +16,24 @@ interface OtherProjectsCarouselProps {
 export default function OtherProjectsCarousel({
   projects,
 }: OtherProjectsCarouselProps) {
-  const [prevEl, setPrevEl] = useState<HTMLElement | null>(null);
-  const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
-
   if (!projects || projects.length === 0) {
     return null;
   }
 
   return (
-    <section className="p-48 flex flex-col gap-10">
-      <h2 className="text-6xl">On continue ?</h2>
+    <section className="p-6 py-16 md:p-16 lg:p-28 xl:p-48 flex flex-col gap-6 md:gap-10">
+      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal">
+        On continue ?
+      </h2>
 
       <Swiper
         modules={[Navigation]}
-        navigation={{
-          prevEl,
-          nextEl,
-        }}
-        spaceBetween={40}
-        slidesPerView={3}
+        spaceBetween={24}
+        slidesPerView="auto"
         className="w-full mask-linear-[to_right,#000_60%,#0001_100%]"
       >
         {projects.map((project) => (
-          <SwiperSlide key={project.id}>
+          <SwiperSlide key={project.id} className="w-[min(350px,80vw)]!">
             <ProjectCard project={project} />
           </SwiperSlide>
         ))}
