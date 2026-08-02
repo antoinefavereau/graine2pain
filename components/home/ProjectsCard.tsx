@@ -1,4 +1,9 @@
+"use client";
+
 import { forwardRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+import "swiper/css";
 
 import Button from "@/components/Button";
 import Card from "@/components/Card";
@@ -18,7 +23,7 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
         ref={ref}
         wrapperStyle={wrapperStyle}
         wrapperClassName="col-span-1 lg:col-span-2 xl:col-span-1"
-        className="flex flex-col gap-5 p-5 pb-2"
+        className="flex flex-col gap-5 p-5"
       >
         <div className="flex justify-between align-top">
           <h2 className="text-xl font-bold">Derniers projets</h2>
@@ -26,18 +31,21 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
             <Icon name="arrow_outward" className="text-2xl text-grey-lighter" />
           </Button>
         </div>
-        <ul
-          className="flex flex-col gap-5 overflow-y-auto max-h-44 scrollbar-hide mask-linear-[to_bottom,#000_60%,#0001_100%] pb-10"
-          data-lenis-prevent
-        >
-          {projects.map((project) => {
-            return (
-              <li key={project.id}>
+
+        {projects && projects.length > 0 ? (
+          <Swiper
+            loop={projects.length > 1}
+            spaceBetween={16}
+            slidesPerView="auto"
+            className="w-full mask-linear-[to_right,#000_60%,#0001_100%]"
+          >
+            {projects.map((project) => (
+              <SwiperSlide key={project.id} className="w-[min(300px,80vw)]!">
                 <ProjectCard project={project} />
-              </li>
-            );
-          })}
-        </ul>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : null}
       </Card>
     );
   },

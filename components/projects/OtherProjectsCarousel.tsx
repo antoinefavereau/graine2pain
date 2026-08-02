@@ -1,10 +1,8 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 
 import "swiper/css";
-import "swiper/css/navigation";
 
 import ProjectCard from "@/components/projects/ProjectCard";
 import type { Project } from "@/types/Project";
@@ -27,7 +25,6 @@ export default function OtherProjectsCarousel({
       </h2>
 
       <Swiper
-        modules={[Navigation]}
         spaceBetween={24}
         slidesPerView="auto"
         className="w-full mask-linear-[to_right,#000_60%,#0001_100%]"
