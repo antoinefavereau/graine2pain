@@ -1,9 +1,9 @@
-import Orb from "@/components/Orb"
+import Orb from "@/components/Orb";
 
 export default function Test() {
   return (
-    <div className="h-screen">
+    <div className="h-dvh">
       <Orb />
     </div>
-  )
+  );
 }
