@@ -15,10 +15,10 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
   const hasSingleImage = images.length === 1;
 
   return (
-    <section className="min-h-screen flex flex-col justify-end p-24 relative overflow-hidden">
+    <section className="min-h-screen flex flex-col justify-end py-24 px-6 sm:px-8 md:px-12 relative overflow-hidden">
       {/* ── 3 images : téléphones en fond ── */}
       {hasThreeImages && (
-        <div className="absolute inset-24 top-28 -z-10">
+        <div className="absolute inset-y-24 top-40 inset-x-6 sm:inset-x-8 md:inset-x-12 -z-10">
           <PhoneMockupGroup
             images={images}
             title={project.title}
@@ -29,7 +29,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
 
       {/* ── 1 image : fond plein ── */}
       {hasSingleImage && images[0]?.image?.url && (
-        <div className="absolute inset-24 top-28 -z-10">
+        <div className="absolute inset-y-24 top-40 inset-x-6 sm:inset-x-8 md:inset-x-12 -z-10">
           <Image
             src={images[0].image.url}
             alt={project.title}
@@ -45,7 +45,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
       {/* Content */}
       <div className="relative flex flex-col">
         {project.subTitle && (
-          <p className="text-3xl font-extralight tracking-[120%] uppercase text-secondary-light text-center">
+          <p className="text-lg sm:text-2xl lg:text-3xl font-extralight tracking-[120%] uppercase text-secondary-light text-center mb-2 sm:mb-4">
             {project.subTitle}
           </p>
         )}

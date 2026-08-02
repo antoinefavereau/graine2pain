@@ -11,6 +11,7 @@ import { twMerge } from "tailwind-merge";
 import Button from "@/components/Button";
 import PhoneFrame from "@/components/PhoneFrame";
 import Card from "@/components/Card";
+import BlockLabel from "@/components/projects/blocks/BlockLabel";
 
 const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
@@ -22,31 +23,35 @@ interface SplitMediaBlockProps {
 
 export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
   return (
-    <section className="p-40">
+    <section className="p-4 py-12 md:p-12 lg:p-24 xl:p-40">
       <Card
         className={twMerge(
-          "relative gap-20 px-20 py-10 overflow-hidden",
-          block.medias && block.medias.length === 2 && "flex items-center",
-          block.medias && block.medias.length > 2 && "grid grid-cols-2",
+          "relative gap-8 lg:gap-20 px-6 md:px-12 lg:px-20 py-6 md:py-8 lg:py-10 overflow-hidden",
+          block.medias &&
+            block.medias.length === 2 &&
+            "flex flex-col-reverse xl:flex-row items-center",
+          block.medias &&
+            block.medias.length > 2 &&
+            "grid grid-cols-1 md:grid-cols-2",
         )}
       >
         <div className="absolute inset-0 bg-linear-to-tr from-secondary-base/10 to-transparent"></div>
-        {block.medias && block.medias.length == 2 && (
-          <div className="grid grid-cols-2 gap-6">
+        {block.medias && block.medias.length === 2 && (
+          <div className="grid grid-cols-2 gap-4 lg:gap-6">
             {block.medias.map((item, i) => (
               <div
                 key={item.id ?? i}
-                className="flex flex-col gap-4 items-center"
+                className="flex flex-col gap-2 sm:gap-4 items-center"
               >
                 {item.image?.url && (
                   <PhoneFrame
                     src={item.image.url}
                     alt={item.image.alt}
-                    className="w-auto h-[60vh]"
+                    className="w-auto h-[40vh]"
                   />
                 )}
                 {item.caption && (
-                  <p className="text-secondary-light text-center">
+                  <p className="text-sm sm:text-base text-secondary-light text-center">
                     {item.caption}
                   </p>
                 )}
@@ -56,12 +61,12 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
         )}
 
         {block.medias && block.medias.length > 2 && (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-4 lg:gap-6 max-md:aspect-square max-md:order-2">
             {block.medias.map((item, i) => (
               <div
                 key={item.id ?? i}
                 className={twMerge(
-                  "relative rounded-4xl overflow-hidden",
+                  "relative rounded-2xl sm:rounded-4xl overflow-hidden",
                   block.medias?.length === 3 && i === 0 && "col-span-2",
                 )}
               >
@@ -78,14 +83,10 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col gap-2">
-          {block.label && (
-            <ul className="list-disc ml-4 text-xl text-secondary-base font-bold">
-              <li>{block.label}</li>
-            </ul>
-          )}
-          <div className="flex-1 flex flex-col gap-6">
-            <h2 className="text-6xl lg:text-5xl font-normal">
+        <div className="flex-1 flex flex-col gap-2 w-full">
+          <BlockLabel color="secondary">{block.label}</BlockLabel>
+          <div className="flex-1 flex flex-col gap-4 lg:gap-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal">
               {block.title}
               {block.titleHighlight && (
                 <>
@@ -98,7 +99,7 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
             </h2>
 
             {block.description && (
-              <div className="text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
+              <div className="text-sm sm:text-base text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
                 <RichText
                   data={block.description as SerializedEditorState}
                   converters={jsxConverters}
@@ -107,7 +108,7 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
             )}
 
             {block.ctaLabel && (
-              <div className="self-start">
+              <div className="self-start mt-2">
                 <Button
                   href={block.ctaUrl ?? "#"}
                   target="_blank"

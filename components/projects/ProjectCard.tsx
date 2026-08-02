@@ -20,7 +20,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         href={`/projects/${project.id}`}
         className="flex flex-col gap-4 aspect-video p-5 pb-0"
       >
-        <p className="text-grey-lighter uppercase tracking-[95%]">
+        <p className="text-sm text-grey-lighter uppercase tracking-[95%]">
           {project.subTitle}
         </p>
         <div className="flex flex-1 gap-2">
@@ -44,7 +44,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             ) : null}
           </div>
 
-          <h3 className="text-2xl text-grey-light font-extralight pb-5 text-end self-end">
+          <h3 className="text-xl sm:text-2xl text-grey-light font-extralight pb-5 text-end self-end">
             {project.title}
             {project.titleHighlight && (
               <>

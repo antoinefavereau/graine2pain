@@ -17,6 +17,7 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
       <Card
         ref={ref}
         wrapperStyle={wrapperStyle}
+        wrapperClassName="col-span-1 lg:col-span-2 xl:col-span-1"
         className="flex flex-col gap-5 p-5 pb-2"
       >
         <div className="flex justify-between align-top">
