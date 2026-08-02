@@ -2,6 +2,7 @@
 
 import { forwardRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
 
 import "swiper/css";
 
@@ -34,6 +35,8 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
 
         {projects && projects.length > 0 ? (
           <Swiper
+            modules={[Mousewheel]}
+            mousewheel
             loop={projects.length > 1}
             spaceBetween={16}
             slidesPerView="auto"
