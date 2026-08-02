@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
 import Button from "@/components/Button";
+import Card from "@/components/Card";
 import Icon from "@/components/Icon";
 
 import "swiper/css";
@@ -35,10 +36,12 @@ const RecommandationsCard = forwardRef<
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
   return (
-    <div
+    <Card
       ref={ref}
-      style={style}
-      className="relative grid grid-rows-[1fr_auto] gap-5 p-5 bg-grey-dark rounded-[20px]"
+      wrapperStyle={style}
+      variant="dark"
+      wrapperClassName="grid"
+      className="relative grid grid-rows-[1fr_auto] gap-5 p-5"
     >
       <Swiper
         modules={[Navigation]}
@@ -90,7 +93,7 @@ const RecommandationsCard = forwardRef<
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 });
 
