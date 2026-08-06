@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import HeroIntro from "@/components/home/HeroIntro";
 import PhoneMockupGroup from "@/components/PhoneMockupGroup";
+import Navbar from "@/components/Navbar";
 
 interface ProjectHeroProps {
   project: Project;
@@ -15,7 +16,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
   const hasSingleImage = images.length === 1;
 
   return (
-    <section className="min-h-dvh flex flex-col justify-end py-24 px-6 sm:px-8 md:px-12 relative overflow-hidden">
+    <section className="min-h-dvh flex flex-col justify-between pb-24 px-6 sm:px-8 md:px-12 relative overflow-hidden">
       {/* ── 3 images : téléphones en fond ── */}
       {hasThreeImages && (
         <div className="absolute inset-y-24 top-40 inset-x-6 sm:inset-x-8 md:inset-x-12 -z-10">
@@ -41,6 +42,8 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-linear-to-t from-grey-black from-0% via-grey-black via-30% to-transparent to-70%" />
+
+      <Navbar />
 
       {/* Content */}
       <div className="relative flex flex-col">

@@ -9,16 +9,15 @@ import HeroIntro from "@/components/home/HeroIntro";
 import InfosCard from "@/components/home/InfosCard";
 import RecommandationsCard from "@/components/home/RecommandationsCard";
 import ProjectCard from "@/components/home/ProjectsCard";
+import Navbar from "@/components/Navbar";
 
 interface HomeProps {
-  tags: any[];
   infos: any[];
   recommandations: any[];
   projects: any[];
 }
 
 export default function Home({
-  tags,
   infos,
   recommandations,
   projects,
@@ -62,9 +61,11 @@ export default function Home({
   return (
     <div
       ref={rootRef}
-      className="relative min-h-dvh pt-36 pb-10 flex flex-col justify-between gap-16 bg-black"
+      className="relative min-h-dvh pb-10 flex flex-col justify-between gap-16 bg-black"
     >
       <Orb ref={orbRef} style={{ opacity: 0, transform: "translateY(16px)" }} />
+
+      <Navbar />
 
       <div className="my-auto">
         <HeroIntro title="Bienvenue dans mon" titleHighlight="portfolio" />
