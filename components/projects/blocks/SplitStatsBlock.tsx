@@ -26,7 +26,7 @@ export default function SplitStatsBlock({ block }: SplitStatsBlockProps) {
       <div className="flex flex-wrap gap-10 sm:gap-16 items-start">
         {/* Left — Text content */}
         <div className="flex-1 flex flex-col gap-4 lg:gap-6 min-w-full sm:min-w-sm">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal">
             {block.title}
             {block.titleHighlight && (
               <>
@@ -39,7 +39,7 @@ export default function SplitStatsBlock({ block }: SplitStatsBlockProps) {
           </h2>
 
           {block.description && (
-            <div className="text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
+            <div className="text-sm text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
               <RichText
                 data={block.description as SerializedEditorState}
                 converters={jsxConverters}
@@ -78,16 +78,16 @@ export default function SplitStatsBlock({ block }: SplitStatsBlockProps) {
 
         {/* Right — Stat cards */}
         {block.stats && block.stats.length > 0 && (
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8">
             {block.stats.map((stat, i) => (
               <Card
                 key={stat.id ?? i}
-                className="p-6 pe-8 sm:pe-14 flex flex-col justify-between gap-2 w-full sm:max-w-sm min-h-none sm:min-h-56"
+                className="p-6 pe-8 sm:pe-14 flex flex-col justify-between gap-2 w-full sm:max-w-sm min-h-none sm:min-h-44"
               >
                 <BlockLabel size="sm" color="primary-lighter">
                   {stat.label}
                 </BlockLabel>
-                <p className="text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-dark">
+                <p className="text-4xl sm:text-6xl lg:text-7xl font-bold text-primary-dark">
                   {stat.value}
                 </p>
               </Card>

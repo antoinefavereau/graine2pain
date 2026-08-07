@@ -9,8 +9,8 @@ interface BlockLabelProps {
 }
 
 const sizeStyles = {
-  sm: "text-sm sm:text-base",
-  md: "text-lg md:text-xl",
+  sm: "text-xs sm:text-sm",
+  md: "text-sm sm:text-base",
 };
 
 const colorStyles = {

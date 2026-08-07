@@ -26,10 +26,10 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
     <section className="p-4 py-12 md:p-12 lg:p-24 xl:p-40">
       <Card
         className={twMerge(
-          "relative gap-8 lg:gap-20 px-6 md:px-12 lg:px-20 py-6 md:py-8 lg:py-10 overflow-hidden",
+          "relative gap-8 lg:gap-12 px-4 md:px-12 py-6 md:py-8 lg:py-10 overflow-hidden",
           block.medias &&
             block.medias.length === 2 &&
-            "flex flex-col-reverse xl:flex-row items-center",
+            "flex flex-col-reverse lg:flex-row items-center",
           block.medias &&
             block.medias.length > 2 &&
             "grid grid-cols-1 md:grid-cols-2",
@@ -86,7 +86,7 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
         <div className="flex-1 flex flex-col gap-2 w-full">
           <BlockLabel color="secondary">{block.label}</BlockLabel>
           <div className="flex-1 flex flex-col gap-4 lg:gap-6">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-grey-light">
               {block.title}
               {block.titleHighlight && (
                 <>
@@ -99,7 +99,7 @@ export default function SplitMediaBlock({ block }: SplitMediaBlockProps) {
             </h2>
 
             {block.description && (
-              <div className="text-sm sm:text-base text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
+              <div className="text-xs sm:text-sm text-grey-lighter prose-strong:text-grey-lighter prose-strong:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:mb-1">
                 <RichText
                   data={block.description as SerializedEditorState}
                   converters={jsxConverters}

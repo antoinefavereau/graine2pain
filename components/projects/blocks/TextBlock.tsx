@@ -22,7 +22,7 @@ export default function TextBlock({ block }: TextBlockProps) {
     <section className="p-6 py-16 md:p-16 lg:p-28 xl:p-48 flex gap-2 justify-between items-center flex-wrap">
       <div className="flex flex-col flex-1 gap-2">
         <BlockLabel>{block.label}</BlockLabel>
-        <div className="flex-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal leading-snug text-grey-light min-w-48 max-w-4xl prose-strong:font-bold">
+        <div className="flex-1 text-xl sm:text-2xl md:text-3xl font-normal leading-snug text-grey-light max-w-2xl prose-strong:font-bold">
           <RichText
             data={block.content as SerializedEditorState}
             converters={jsxConverters}
