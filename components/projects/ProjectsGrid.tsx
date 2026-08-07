@@ -13,10 +13,14 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
     <div className="min-h-dvh relative pb-16 px-6 flex flex-col gap-6 md:gap-20">
       <Navbar />
       <div className="w-full max-w-7xl self-center">
-        <h1 className="text-4xl font-bold mb-10">Projets</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-10">
+          Projets
+        </h1>
 
         {projects.length === 0 ? (
-          <p className="text-grey-base text-lg">Aucun projet pour le moment.</p>
+          <p className="text-grey-base text-sm sm:text-lg">
+            Aucun projet pour le moment.
+          </p>
         ) : (
           <ul className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
             {projects.map((project) => (

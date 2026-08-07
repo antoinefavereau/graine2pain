@@ -68,10 +68,10 @@ export default function Home({
       <Navbar />
 
       <div className="my-auto">
-        <HeroIntro title="Bienvenue dans mon" titleHighlight="portfolio" />
+        <HeroIntro title="Product Designer" titleHighlight="UX/UI" />
       </div>
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 self-center px-4 sm:px-6 md:px-10">
+      <div className="relative max-w-7xl grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[auto_1fr_1fr] gap-8 self-center px-4 sm:px-6 md:px-10">
         <InfosCard
           ref={infosRef}
           infos={infos}

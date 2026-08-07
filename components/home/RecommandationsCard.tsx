@@ -65,15 +65,15 @@ const RecommandationsCard = forwardRef<
                   className="w-12 h-12 rounded-full"
                 />
                 <div className="flex flex-col gap-1">
-                  <h3 className="font-semibold uppercase">
+                  <h3 className="text-sm font-semibold uppercase">
                     {recommandation.nom}
                   </h3>
-                  <p className="text-gray-light text-sm font-light text-balance">
+                  <p className="text-gray-light text-xs font-light text-balance">
                     {recommandation.fonction}
                   </p>
                 </div>
               </div>
-              <p className="text-xl text-justify line-clamp-4 text-ellipsis">
+              <p className="text-lg text-justify line-clamp-4 text-ellipsis">
                 {recommandation.message}
               </p>
             </div>

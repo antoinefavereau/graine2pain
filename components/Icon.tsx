@@ -8,7 +8,7 @@ export default function Icon({ name, ...props }: IconProps) {
   return (
     <span
       {...props}
-      className={twMerge("material-symbols-outlined text-xl!", props.className)}
+      className={twMerge("material-symbols-outlined text-lg!", props.className)}
     >
       {name}
     </span>

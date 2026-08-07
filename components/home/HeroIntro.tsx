@@ -153,7 +153,7 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
           showBorder={isTyping || hasTyped}
           showCorners={hasFinished}
         >
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extralight text-center whitespace-break-spaces">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-center whitespace-break-spaces">
             {displayedText.slice(0, heroPrefix.length)}
             {displayedText.length > heroPrefix.length && (
               <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">

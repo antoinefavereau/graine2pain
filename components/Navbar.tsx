@@ -98,7 +98,7 @@ export default function Navbar() {
                   color={link.color}
                   href={link.href}
                   className={twMerge(
-                    "uppercase text-grey-lighter",
+                    "uppercase text-grey-lighter text-xs",
                     `hover:${getColor(link.color)}`,
                     (link.href === "/"
                       ? pathname === "/"
@@ -112,7 +112,7 @@ export default function Navbar() {
                 <li ref={nameRef}>
                   <Link
                     href="/"
-                    className="text-3xl bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent"
+                    className="text-2xl bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent"
                   >
                     MOREAU ATHÉNA
                   </Link>
