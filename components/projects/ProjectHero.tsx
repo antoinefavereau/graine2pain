@@ -48,7 +48,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
       {/* Content */}
       <div className="relative flex flex-col">
         {project.subTitle && (
-          <p className="text-lg sm:text-2xl lg:text-3xl font-extralight tracking-[120%] uppercase text-secondary-light text-center mb-2 sm:mb-4">
+          <p className="text-base sm:text-xl lg:text-2xl font-extralight tracking-[120%] uppercase text-secondary-light text-center mb-2 sm:mb-4">
             {project.subTitle}
           </p>
         )}
