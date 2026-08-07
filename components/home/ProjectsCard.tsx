@@ -24,12 +24,12 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
         ref={ref}
         wrapperStyle={wrapperStyle}
         wrapperClassName="col-span-1 lg:col-span-2 xl:col-span-1"
-        className="flex flex-col gap-5 p-5"
+        className="grid gap-5 p-5"
       >
         <div className="flex justify-between align-top">
-          <h2 className="text-xl font-bold">Derniers projets</h2>
+          <h2 className="text-lg font-bold">Derniers projets</h2>
           <Button variant="outline" color="grey" onlyIcon href="/projects">
-            <Icon name="arrow_outward" className="text-2xl text-grey-lighter" />
+            <Icon name="arrow_outward" />
           </Button>
         </div>
 

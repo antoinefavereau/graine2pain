@@ -23,7 +23,7 @@ const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
     <Card
       ref={ref}
       wrapperStyle={wrapperStyle}
-      className="flex flex-col gap-5 p-5"
+      className="flex flex-col gap-5 p-5 xl:w-max max-w-full"
     >
       <div className="flex items-start gap-6">
         <Button variant="outline" color="grey" onlyIcon href="/about">
@@ -45,9 +45,9 @@ const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
             <li className="flex justify-between items-center gap-8">
               <div className="flex items-center gap-2">
                 <Icon name={info.icone || ""} className="font-light!" />
-                <p className="font-semibold">{info.titre}</p>
+                <p className="text-sm font-semibold">{info.titre}</p>
               </div>
-              <p className="text-sm font-light">{info.valeur}</p>
+              <p className="text-xs font-light">{info.valeur}</p>
             </li>
             {index < infos.length - 1 && <hr className="border-grey-medium" />}
           </Fragment>

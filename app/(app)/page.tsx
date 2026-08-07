@@ -6,14 +6,7 @@ import { safePayloadFind } from "@/lib/payload";
 export default async function Home() {
   const payload = await getPayload({ config });
 
-  const [tags, projects, recommandations, infos] = await Promise.all([
-    safePayloadFind(
-      payload,
-      {
-        collection: "tags" as any,
-      },
-      "tags",
-    ),
+  const [projects, recommandations, infos] = await Promise.all([
     safePayloadFind(
       payload,
       {
@@ -42,7 +35,6 @@ export default async function Home() {
 
   return (
     <HomeClient
-      tags={tags.docs}
       infos={infos.docs}
       recommandations={recommandations.docs}
       projects={projects.docs}
