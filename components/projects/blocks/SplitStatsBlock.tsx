@@ -1,3 +1,9 @@
+"use client";
+
+import { useRef } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { SplitStatsBlock as SplitStatsBlockType } from "@/types/Project";
 import { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import {
@@ -11,9 +17,163 @@ import Button from "@/components/Button";
 import Card from "@/components/Card";
 import BlockLabel from "@/components/projects/blocks/BlockLabel";
 
+gsap.registerPlugin(ScrollTrigger);
+
 const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
 });
+
+interface StatSegment {
+  isNumber: boolean;
+  text: string;
+  target?: number;
+  decimals?: number;
+  hasCommaDecimal?: boolean;
+  hasSpaceThousand?: boolean;
+}
+
+function parseStatValue(raw: string): StatSegment[] {
+  if (!raw) return [];
+
+  const regex = /(\d+(?:[\s.,]\d+)*|\d+)/g;
+  const segments: StatSegment[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(raw)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({
+        isNumber: false,
+        text: raw.slice(lastIndex, match.index),
+      });
+    }
+
+    const numStr = match[0];
+    let cleanStr = numStr;
+    let hasCommaDecimal = false;
+    let hasSpaceThousand = numStr.includes(" ");
+    let decimals = 0;
+
+    if (numStr.includes(",")) {
+      const parts = numStr.split(",");
+      if (parts.length === 2 && parts[1].length <= 2) {
+        hasCommaDecimal = true;
+        decimals = parts[1].length;
+        cleanStr = parts[0].replace(/\s/g, "") + "." + parts[1];
+      } else {
+        cleanStr = numStr.replace(/,/g, "").replace(/\s/g, "");
+      }
+    } else if (numStr.includes(".")) {
+      const parts = numStr.split(".");
+      if (parts.length === 2 && parts[1].length <= 2) {
+        decimals = parts[1].length;
+        cleanStr = parts[0].replace(/\s/g, "") + "." + parts[1];
+      } else {
+        cleanStr = numStr.replace(/\./g, "").replace(/\s/g, "");
+      }
+    } else {
+      cleanStr = numStr.replace(/\s/g, "");
+    }
+
+    const parsed = parseFloat(cleanStr);
+
+    segments.push({
+      isNumber: true,
+      text: numStr,
+      target: isNaN(parsed) ? 0 : parsed,
+      decimals,
+      hasCommaDecimal,
+      hasSpaceThousand,
+    });
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < raw.length) {
+    segments.push({
+      isNumber: false,
+      text: raw.slice(lastIndex),
+    });
+  }
+
+  return segments;
+}
+
+function AnimatedStatValue({ value }: { value?: string | null }) {
+  const elementRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(
+    () => {
+      if (!elementRef.current || !value) return;
+
+      const segments = parseStatValue(value);
+      const targetNumbers = segments.filter((s) => s.isNumber);
+
+      if (targetNumbers.length === 0) {
+        elementRef.current.textContent = value;
+        return;
+      }
+
+      const renderText = (progress: number) => {
+        if (!elementRef.current) return;
+        const text = segments
+          .map((seg) => {
+            if (!seg.isNumber || seg.target === undefined) {
+              return seg.text;
+            }
+            const currentNum = seg.target * progress;
+            let formatted = currentNum.toFixed(seg.decimals ?? 0);
+
+            if (seg.hasSpaceThousand) {
+              const parts = formatted.split(".");
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+              formatted = parts.join(".");
+            }
+
+            if (seg.hasCommaDecimal) {
+              formatted = formatted.replace(".", ",");
+            }
+            return formatted;
+          })
+          .join("");
+
+        elementRef.current.textContent = text;
+      };
+
+      renderText(0);
+
+      const st = ScrollTrigger.create({
+        trigger: elementRef.current,
+        scroller: document.body,
+        start: "top 85%",
+        end: "bottom 70%",
+        scrub: 0.5,
+        fastScrollEnd: true,
+        onUpdate: (self) => {
+          renderText(self.progress);
+        },
+        onLeave: () => {
+          renderText(1);
+        },
+        onLeaveBack: () => {
+          renderText(0);
+        },
+        onRefresh: (self) => {
+          if (self.progress >= 1) renderText(1);
+          else if (self.progress <= 0) renderText(0);
+          else renderText(self.progress);
+        },
+      });
+
+      return () => {
+        st.kill();
+      };
+    },
+    { scope: elementRef, dependencies: [value] },
+  );
+
+  return <span ref={elementRef}>{value}</span>;
+}
 
 interface SplitStatsBlockProps {
   block: SplitStatsBlockType;
@@ -88,7 +248,7 @@ export default function SplitStatsBlock({ block }: SplitStatsBlockProps) {
                   {stat.label}
                 </BlockLabel>
                 <p className="text-4xl sm:text-6xl lg:text-7xl font-bold text-primary-dark">
-                  {stat.value}
+                  <AnimatedStatValue value={stat.value} />
                 </p>
               </Card>
             ))}
