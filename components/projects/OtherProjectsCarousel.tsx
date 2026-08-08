@@ -86,12 +86,10 @@ export default function OtherProjectsCarousel({
       if (!sectionRef.current || !trackRef.current) return;
 
       const rect = sectionRef.current.getBoundingClientRect();
-      const isAtBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 50;
+      const isSectionVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
-      // Intercept wheel when at bottom of page and section is in viewport
-      if (isAtBottom && rect.top < window.innerHeight) {
+      // Intercept wheel as soon as the section enters the viewport.
+      if (isSectionVisible) {
         if (e.deltaY > 0) {
           e.preventDefault();
           targetScrollRef.current += e.deltaY * 0.8;
