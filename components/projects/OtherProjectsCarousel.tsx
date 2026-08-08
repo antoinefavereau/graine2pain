@@ -126,7 +126,7 @@ export default function OtherProjectsCarousel({
 
       <div
         ref={trackRef}
-        className="w-full overflow-x-auto scrollbar-hide flex gap-6 pe-12 mask-linear-[to_right,#000_80%,#0001_100%]"
+        className="w-full overflow-x-hidden scrollbar-hide flex gap-6 pe-12 mask-linear-[to_right,#000_80%,#0001_100%]"
       >
         {displayProjects.map((project, i) => (
           <div
