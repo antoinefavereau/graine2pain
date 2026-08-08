@@ -90,6 +90,10 @@ export interface ScrollTypewriterProps {
   start?: string;
   /** End scroll trigger position (default "bottom 75%") */
   end?: string;
+  /** Maximum typing speed in characters per second (default 100) */
+  charsPerSecond?: number;
+  /** Maximum erasing speed in characters per second (default 200) */
+  eraseCharsPerSecond?: number;
 }
 
 export default function ScrollTypewriter({
@@ -98,6 +102,8 @@ export default function ScrollTypewriter({
   className = "",
   start = "top 75%",
   end = "bottom 75%",
+  charsPerSecond = 100,
+  eraseCharsPerSecond = 200,
 }: ScrollTypewriterProps) {
   const container = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
@@ -112,6 +118,7 @@ export default function ScrollTypewriter({
       if (totalChars === 0) return;
 
       const cursor = cursorRef.current;
+      const proxy = { count: 0 };
 
       const updateTypingCount = (count: number) => {
         const currentCount = Math.min(
@@ -133,29 +140,50 @@ export default function ScrollTypewriter({
       // Set initial state
       updateTypingCount(0);
 
+      const animateToTarget = (target: number) => {
+        const targetCount = Math.min(
+          totalChars,
+          Math.max(0, Math.round(target)),
+        );
+        const distance = Math.abs(targetCount - proxy.count);
+        if (distance === 0) return;
+
+        const isErasing = targetCount < proxy.count;
+        const speed = isErasing ? eraseCharsPerSecond : charsPerSecond;
+        const duration = Math.max(0.02, distance / speed);
+
+        gsap.to(proxy, {
+          count: targetCount,
+          duration,
+          ease: "none",
+          overwrite: "auto",
+          onUpdate: () => {
+            updateTypingCount(proxy.count);
+          },
+        });
+      };
+
       const st = ScrollTrigger.create({
         trigger: container.current,
         scroller: document.body,
         start,
         end,
-        scrub: 0.3,
-        fastScrollEnd: true,
         onUpdate: (self) => {
-          updateTypingCount(self.progress * totalChars);
+          animateToTarget(self.progress * totalChars);
         },
         onLeave: () => {
-          updateTypingCount(totalChars);
+          animateToTarget(totalChars);
         },
         onLeaveBack: () => {
-          updateTypingCount(0);
+          animateToTarget(0);
         },
         onRefresh: (self) => {
           if (self.progress >= 1) {
-            updateTypingCount(totalChars);
+            animateToTarget(totalChars);
           } else if (self.progress <= 0) {
-            updateTypingCount(0);
+            animateToTarget(0);
           } else {
-            updateTypingCount(self.progress * totalChars);
+            animateToTarget(self.progress * totalChars);
           }
         },
       });
@@ -164,9 +192,13 @@ export default function ScrollTypewriter({
 
       return () => {
         st.kill();
+        gsap.killTweensOf(proxy);
       };
     },
-    { scope: container, dependencies: [start, end] },
+    {
+      scope: container,
+      dependencies: [start, end, charsPerSecond, eraseCharsPerSecond],
+    },
   );
 
   return (
