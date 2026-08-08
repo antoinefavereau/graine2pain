@@ -6,6 +6,7 @@ import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 
 import ProjectCard from "@/components/projects/ProjectCard";
+import ScrollTypewriter from "@/components/ScrollTypewriter";
 import type { Project } from "@/types/Project";
 
 interface OtherProjectsCarouselProps {
@@ -22,7 +23,9 @@ export default function OtherProjectsCarousel({
   return (
     <section className="p-6 py-16 md:p-16 lg:p-28 xl:p-48 flex flex-col gap-6 md:gap-10">
       <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal">
-        On continue ?
+        <ScrollTypewriter start="top 85%" end="top 60%">
+          On continue ?
+        </ScrollTypewriter>
       </h2>
 
       <Swiper
