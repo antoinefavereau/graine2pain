@@ -1,6 +1,56 @@
-export default function Footer() {
+"use client";
+
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { twMerge } from "tailwind-merge";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface FooterProps {
+  className?: string;
+}
+
+export default function Footer({ className }: FooterProps) {
+  const footerRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      if (!footerRef.current) return;
+
+      gsap.fromTo(
+        footerRef.current,
+        {
+          y: 80,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: footerRef.current,
+            scroller: document.body,
+            start: "top bottom",
+            end: "bottom bottom",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    },
+    { scope: footerRef },
+  );
+
   return (
-    <footer className="bg-grey-dark flex flex-col-reverse md:flex-row justify-between items-start md:items-center gap-4 px-6 sm:px-16 md:px-28 py-6 md:py-12 rounded-t-2xl mx-4 mt-auto">
+    <footer
+      ref={footerRef}
+      className={twMerge(
+        "bg-grey-dark flex flex-col-reverse md:flex-row justify-between items-start md:items-center gap-4 px-6 sm:px-16 md:px-28 py-6 md:py-12 rounded-t-2xl mx-4 mt-auto will-change-transform",
+        className,
+      )}
+    >
       {/* Left Column: Contact Information */}
       <div className="flex flex-col gap-.5 text-xs sm:text-sm text-grey-lighter">
         <div>
