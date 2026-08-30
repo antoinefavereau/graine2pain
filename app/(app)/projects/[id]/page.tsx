@@ -6,6 +6,7 @@ import ProjectHero from "@/components/projects/ProjectHero";
 import OtherProjectsCarousel from "@/components/projects/OtherProjectsCarousel";
 import ProjectBackgroundGlow from "@/components/projects/ProjectBackgroundGlow";
 import { safePayloadFind } from "@/lib/payload";
+import Footer from "@/components/Footer";
 
 export default async function ProjectPage({
   params,
@@ -44,6 +45,7 @@ export default async function ProjectPage({
           <BlockRenderer key={block.id ?? i} block={block} />
         ))}
       <OtherProjectsCarousel projects={otherProjects} />
+      <Footer />
     </ProjectBackgroundGlow>
   );
 }
