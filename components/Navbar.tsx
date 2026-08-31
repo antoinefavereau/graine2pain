@@ -99,7 +99,7 @@ export default function Navbar() {
   return (
     <nav className="relative" ref={navRef}>
       {/* Desktop Navigation */}
-      <ul className="hidden md:flex justify-around items-center gap-5 px-4 pt-10 pb-2">
+      <ul className="hidden md:flex justify-around items-center px-4 pt-10 pb-2">
         {links.map((link, index) => {
           return (
             <Fragment key={link.href}>
@@ -111,7 +111,7 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   className={twMerge(
-                    "uppercase text-grey-lighter text-xs",
+                    "px-4 py-3 uppercase text-grey-lighter text-xs",
                     `hover:${getColor(link.color)}`,
                     (link.href === "/"
                       ? pathname === "/"

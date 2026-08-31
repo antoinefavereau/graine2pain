@@ -4,7 +4,9 @@ import type { Project } from "@/types/Project";
 import BlockRenderer from "@/components/projects/blocks/BlockRenderer";
 import ProjectHero from "@/components/projects/ProjectHero";
 import OtherProjectsCarousel from "@/components/projects/OtherProjectsCarousel";
+import ProjectBackgroundGlow from "@/components/projects/ProjectBackgroundGlow";
 import { safePayloadFind } from "@/lib/payload";
+import Footer from "@/components/Footer";
 
 export default async function ProjectPage({
   params,
@@ -35,7 +37,7 @@ export default async function ProjectPage({
   );
 
   return (
-    <>
+    <ProjectBackgroundGlow>
       <ProjectHero project={project} />
       {project.blocks &&
         project.blocks.length > 0 &&
@@ -43,6 +45,7 @@ export default async function ProjectPage({
           <BlockRenderer key={block.id ?? i} block={block} />
         ))}
       <OtherProjectsCarousel projects={otherProjects} />
-    </>
+      <Footer />
+    </ProjectBackgroundGlow>
   );
 }
