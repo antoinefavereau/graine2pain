@@ -4,18 +4,49 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 
-import Button from "@/components/Button";
-import Icon from "@/components/Icon";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ScrollTypewriter from "@/components/ScrollTypewriter";
 import type { Project } from "@/types/Project";
 
-interface OtherProjectsCarouselProps {
+/**
+ * Variables de configuration de l'arrondi et du comportement du carrousel
+ * Modifiez ces valeurs pour ajuster la courbure, la vitesse et le magnétisme.
+ */
+export const CAROUSEL_CONFIG = {
+  // Courbure & inclinaison en arc de cercle
+  arc: {
+    minRadius: 850, // Rayon minimal de l'arc en px (plus petit = plus arrondi/courbé)
+    radiusMultiplier: 0.75, // Facteur appliqué à la largeur de l'écran (radius = max(minRadius, width * multiplier))
+    maxAngle: 0.95, // Angle maximal d'inflexion (en radians, clamp)
+    rotationFactor: 0.55, // Ratio de rotation des cartes (adouci pour accompagner harmonieusement la courbe)
+    cullDistanceFactor: 1.25, // Facteur de distance au-delà duquel les cartes ne sont plus transformées
+  },
+  // Espacement & disposition
+  layout: {
+    cardGap: 40, // Espace entre les cartes en px (augmenté pour aérer les coins inclinés)
+    edgeFadePercent: 6, // Largeur du fondu sur les bords gauche et droit (en %)
+  },
+  // Physique du défilement & magnétisme
+  physics: {
+    lerpSpeed: 0.12, // Vitesse d'interpolation / fluidité du scroll
+    wheelSensitivity: 0.8, // Sensibilité de la molette
+    touchMomentum: 250, // Facteur d'inertie lors du lancer tactile (px/ms * momentum)
+    snapDelay: 220, // Délai avant déclenchement du magnétisme (ms)
+    snapMinDuration: 0.4, // Durée minimale de l'aimantation (s)
+    snapMaxDuration: 0.75, // Durée maximale de l'aimantation (s)
+    forwardThreshold: 0.08, // Seuil d'avancement pour valider la carte suivante (8%)
+    backwardThreshold: 0.92, // Seuil de recul pour valider la carte précédente (92%)
+  },
+};
+
+export interface OtherProjectsCarouselProps {
   projects: Project[];
+  arcConfig?: Partial<typeof CAROUSEL_CONFIG.arc>;
 }
 
 export default function OtherProjectsCarousel({
   projects,
+  arcConfig,
 }: OtherProjectsCarouselProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -23,8 +54,13 @@ export default function OtherProjectsCarousel({
   const currentScrollRef = useRef(0);
   const snapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const snapTweenRef = useRef<gsap.core.Tween | null>(null);
-  const snapTargetRef = useRef(0);
   const lastDeltaRef = useRef(0);
+  const updateCurvatureRef = useRef<(() => void) | null>(null);
+
+  const arcSettings = {
+    ...CAROUSEL_CONFIG.arc,
+    ...arcConfig,
+  };
 
   // Gestion du glissement tactile (mobile / tablette)
   const touchStartXRef = useRef(0);
@@ -36,92 +72,177 @@ export default function OtherProjectsCarousel({
   const lastTouchTimeRef = useRef(0);
   const touchVelocityRef = useRef(0);
 
-  // Duplicate project array to form seamless infinite loops
-  const displayProjects = [...projects, ...projects, ...projects, ...projects];
+  // Répéter les projets pour avoir un cycle d'au moins 5 cartes et 4 répétitions de ce cycle
+  const repeatFactor = Math.max(1, Math.ceil(5 / Math.max(1, projects.length)));
+  const baseProjects =
+    projects.length > 0
+      ? Array.from(
+          { length: projects.length * repeatFactor },
+          (_, i) => projects[i % projects.length],
+        )
+      : [];
+  const displayProjects = [
+    ...baseProjects,
+    ...baseProjects,
+    ...baseProjects,
+    ...baseProjects,
+  ];
+  const baseCount = baseProjects.length;
 
   useGSAP(
     () => {
-      if (!trackRef.current) return;
+      if (!trackRef.current || baseCount === 0) return;
       const track = trackRef.current;
 
-      // Initialize positions
-      currentScrollRef.current = track.scrollLeft;
-      targetScrollRef.current = track.scrollLeft;
+      const card0 = track.children[0] as HTMLElement | undefined;
+      const cardN = track.children[baseCount] as HTMLElement | undefined;
+      const cardWidth = card0?.offsetWidth ?? 350;
+
+      // Largeur exacte d'un cycle complet mesurée directement dans le DOM
+      const cycleWidth =
+        card0 && cardN
+          ? cardN.offsetLeft - card0.offsetLeft
+          : baseCount * (cardWidth + CAROUSEL_CONFIG.layout.cardGap);
+
+      const centerOffset = (track.clientWidth - cardWidth) / 2;
+
+      // Initialiser la position avec la première carte du Set 2 parfaitement centrée au milieu de l'écran
+      const initialScroll = cycleWidth > 0 ? cycleWidth * 2 - centerOffset : 0;
+
+      track.scrollLeft = initialScroll;
+      currentScrollRef.current = initialScroll;
+      targetScrollRef.current = initialScroll;
+
+      const updateCurvature = () => {
+        if (!trackRef.current) return;
+        const trackEl = trackRef.current;
+        const currentCardEl = trackEl.firstElementChild as HTMLElement | null;
+        if (!currentCardEl) return;
+
+        const currentCardWidth = currentCardEl.offsetWidth;
+        if (currentCardWidth <= 0) return;
+        const trackWidth = trackEl.clientWidth;
+        const scrollCenter = trackEl.scrollLeft + trackWidth / 2;
+        const radius = Math.max(
+          arcSettings.minRadius,
+          trackWidth * arcSettings.radiusMultiplier,
+        );
+
+        const children = trackEl.children;
+        for (let i = 0; i < children.length; i++) {
+          const card = children[i] as HTMLElement;
+          const cardCenter = card.offsetLeft + currentCardWidth / 2;
+          const dist = cardCenter - scrollCenter;
+
+          if (Math.abs(dist) > trackWidth * arcSettings.cullDistanceFactor) {
+            card.style.transform = "";
+            continue;
+          }
+
+          const angle = gsap.utils.clamp(
+            -arcSettings.maxAngle,
+            arcSettings.maxAngle,
+            dist / radius,
+          );
+          const y = radius * (1 - Math.cos(angle));
+          const rot = angle * (180 / Math.PI) * arcSettings.rotationFactor;
+
+          card.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+        }
+      };
+
+      updateCurvatureRef.current = updateCurvature;
+      updateCurvature();
 
       const tickerFunc = () => {
-        const singleSetWidth = track.scrollWidth / 4;
-        if (singleSetWidth <= 0) return;
-
-        // Smooth lerp (linear interpolation) for progressive fluid motion
         const diff = targetScrollRef.current - currentScrollRef.current;
         if (Math.abs(diff) > 0.05) {
-          currentScrollRef.current += diff * 0.12;
+          currentScrollRef.current += diff * CAROUSEL_CONFIG.physics.lerpSpeed;
 
-          // Infinite wrap bounds
-          if (currentScrollRef.current >= singleSetWidth * 2) {
-            currentScrollRef.current -= singleSetWidth;
-            targetScrollRef.current -= singleSetWidth;
-            if (snapTweenRef.current) {
-              snapTweenRef.current.kill();
-              snapTweenRef.current = null;
-            }
-          } else if (
-            currentScrollRef.current <= 0 &&
-            targetScrollRef.current < 0
-          ) {
-            currentScrollRef.current += singleSetWidth;
-            targetScrollRef.current += singleSetWidth;
-            if (snapTweenRef.current) {
-              snapTweenRef.current.kill();
-              snapTweenRef.current = null;
+          // On n'effectue le wrap infini que si aucun tween de snap n'est en cours pour éviter tout à-coup
+          if (!snapTweenRef.current?.isActive() && cycleWidth > 0) {
+            if (currentScrollRef.current >= cycleWidth * 2.5) {
+              currentScrollRef.current -= cycleWidth;
+              targetScrollRef.current -= cycleWidth;
+            } else if (currentScrollRef.current < cycleWidth * 1.5) {
+              currentScrollRef.current += cycleWidth;
+              targetScrollRef.current += cycleWidth;
             }
           }
 
           track.scrollLeft = currentScrollRef.current;
+          updateCurvature();
         }
       };
 
       gsap.ticker.add(tickerFunc);
 
+      const handleResize = () => {
+        updateCurvature();
+        scheduleSnap();
+      };
+      window.addEventListener("resize", handleResize);
+
       return () => {
         gsap.ticker.remove(tickerFunc);
+        window.removeEventListener("resize", handleResize);
         if (snapTweenRef.current) {
           snapTweenRef.current.kill();
           snapTweenRef.current = null;
         }
       };
     },
-    { scope: sectionRef, dependencies: [projects] },
+    { scope: sectionRef, dependencies: [projects, arcConfig, baseCount] },
   );
 
   const scheduleSnap = () => {
     if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
     snapTimerRef.current = setTimeout(() => {
-      if (!trackRef.current) return;
-      const cardEl = trackRef.current.firstElementChild as HTMLElement | null;
-      if (!cardEl) return;
-      // card width + gap (24px)
-      const step = cardEl.getBoundingClientRect().width + 24;
-      if (step <= 0) return;
+      if (!trackRef.current || baseCount === 0) return;
+      const track = trackRef.current;
+      const card0 = track.children[0] as HTMLElement | undefined;
+      const cardN = track.children[baseCount] as HTMLElement | undefined;
+      if (!card0) return;
 
-      const singleSetWidth = trackRef.current.scrollWidth / 4;
-      if (singleSetWidth > 0 && targetScrollRef.current >= singleSetWidth * 2) {
-        targetScrollRef.current -= singleSetWidth;
-        currentScrollRef.current -= singleSetWidth;
-        trackRef.current.scrollLeft = currentScrollRef.current;
+      const cardWidth = card0.offsetWidth;
+      if (cardWidth <= 0) return;
+      const cycleWidth =
+        card0 && cardN
+          ? cardN.offsetLeft - card0.offsetLeft
+          : baseCount * (cardWidth + CAROUSEL_CONFIG.layout.cardGap);
+      const step = cycleWidth / baseCount;
+      const trackWidth = track.clientWidth;
+      const centerOffset = (trackWidth - cardWidth) / 2;
+
+      let currentTarget = targetScrollRef.current;
+
+      // Recentrer la cible dans la zone de confort [1.5 * cycleWidth, 2.5 * cycleWidth]
+      if (cycleWidth > 0) {
+        while (currentTarget >= cycleWidth * 2.5) {
+          currentTarget -= cycleWidth;
+          targetScrollRef.current -= cycleWidth;
+          currentScrollRef.current -= cycleWidth;
+          track.scrollLeft = currentScrollRef.current;
+        }
+        while (currentTarget < cycleWidth * 1.5) {
+          currentTarget += cycleWidth;
+          targetScrollRef.current += cycleWidth;
+          currentScrollRef.current += cycleWidth;
+          track.scrollLeft = currentScrollRef.current;
+        }
       }
 
-      const currentTarget = targetScrollRef.current;
-      const cardIndexFloat = currentTarget / step;
+      // Index flottant de la carte alignée avec le centre de l'écran
+      const cardIndexFloat = (currentTarget + centerOffset) / step;
       const direction = lastDeltaRef.current;
 
       let nearestIndex: number;
 
       if (direction > 0) {
-        // En scroll vers l'avant : une avancée intentionnelle (> 8% de la carte) valide le passage à la carte suivante
+        // En scroll vers l'avant : une avancée intentionnelle valide le passage à la carte suivante
         const baseIndex = Math.floor(cardIndexFloat);
         const progress = cardIndexFloat - baseIndex;
-        if (progress > 0.08) {
+        if (progress > CAROUSEL_CONFIG.physics.forwardThreshold) {
           nearestIndex = baseIndex + 1;
         } else {
           nearestIndex = baseIndex;
@@ -130,7 +251,7 @@ export default function OtherProjectsCarousel({
         // En scroll vers l'arrière : recul intentionnel vers la carte précédente
         const baseIndex = Math.floor(cardIndexFloat);
         const progress = cardIndexFloat - baseIndex;
-        if (progress < 0.92) {
+        if (progress < CAROUSEL_CONFIG.physics.backwardThreshold) {
           nearestIndex = baseIndex;
         } else {
           nearestIndex = baseIndex + 1;
@@ -139,23 +260,29 @@ export default function OtherProjectsCarousel({
         nearestIndex = Math.round(cardIndexFloat);
       }
 
-      if (nearestIndex < 0) nearestIndex = 0;
-
-      const nearest = nearestIndex * step;
+      // Position cible pour que la carte soit parfaitement centrée au milieu du viewport
+      const nearest = nearestIndex * step - centerOffset;
       const dist = Math.abs(nearest - currentTarget);
 
       if (dist < 1) return;
 
-      // Transition progressive et douce vers la carte ciblée (évite le à-coup violent)
-      const duration = gsap.utils.clamp(0.4, 0.75, dist / 250);
+      // Transition progressive et douce vers la carte ciblée au centre
+      const duration = gsap.utils.clamp(
+        CAROUSEL_CONFIG.physics.snapMinDuration,
+        CAROUSEL_CONFIG.physics.snapMaxDuration,
+        dist / 250,
+      );
 
       snapTweenRef.current?.kill();
       snapTweenRef.current = gsap.to(targetScrollRef, {
         current: nearest,
         duration,
         ease: "power2.out",
+        onComplete: () => {
+          snapTweenRef.current = null;
+        },
       });
-    }, 220);
+    }, CAROUSEL_CONFIG.physics.snapDelay);
   };
 
   useEffect(() => {
@@ -167,26 +294,15 @@ export default function OtherProjectsCarousel({
 
       // Intercept wheel as soon as the section enters the viewport.
       if (isSectionVisible) {
-        if (e.deltaY > 0) {
+        if (Math.abs(e.deltaY) > 0) {
           e.preventDefault();
-          lastDeltaRef.current = e.deltaY;
+          lastDeltaRef.current = Math.sign(e.deltaY);
           if (snapTweenRef.current) {
             snapTweenRef.current.kill();
             snapTweenRef.current = null;
           }
-          targetScrollRef.current += e.deltaY * 0.8;
-          scheduleSnap();
-        } else if (e.deltaY < 0 && targetScrollRef.current > 10) {
-          e.preventDefault();
-          lastDeltaRef.current = e.deltaY;
-          if (snapTweenRef.current) {
-            snapTweenRef.current.kill();
-            snapTweenRef.current = null;
-          }
-          targetScrollRef.current += e.deltaY * 0.8;
-          if (targetScrollRef.current < 0) {
-            targetScrollRef.current = 0;
-          }
+          targetScrollRef.current +=
+            e.deltaY * CAROUSEL_CONFIG.physics.wheelSensitivity;
           scheduleSnap();
         }
       }
@@ -212,7 +328,7 @@ export default function OtherProjectsCarousel({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isTouchingRef.current || e.touches.length !== 1 || !trackRef.current)
+      if (!isTouchingRef.current || !trackRef.current || baseCount === 0)
         return;
       const touch = e.touches[0];
       const diffX = touch.clientX - touchStartXRef.current;
@@ -240,24 +356,34 @@ export default function OtherProjectsCarousel({
 
         targetScrollRef.current = touchStartScrollRef.current - diffX;
 
-        // Bouclage infini en glissement continu
-        const singleSetWidth = trackRef.current.scrollWidth / 4;
-        if (
-          singleSetWidth > 0 &&
-          targetScrollRef.current >= singleSetWidth * 2
-        ) {
-          targetScrollRef.current -= singleSetWidth;
-          touchStartScrollRef.current -= singleSetWidth;
-          currentScrollRef.current -= singleSetWidth;
-          trackRef.current.scrollLeft = currentScrollRef.current;
-        }
+        // Bouclage infini en glissement continu mesuré au cycle
+        const card0 = trackRef.current.children[0] as HTMLElement | undefined;
+        const cardN = trackRef.current.children[baseCount] as
+          | HTMLElement
+          | undefined;
+        const cardWidth = card0?.offsetWidth ?? 350;
+        const cycleWidth =
+          card0 && cardN
+            ? cardN.offsetLeft - card0.offsetLeft
+            : baseCount * (cardWidth + CAROUSEL_CONFIG.layout.cardGap);
 
-        if (targetScrollRef.current < 0) {
-          targetScrollRef.current = targetScrollRef.current * 0.3;
+        if (cycleWidth > 0) {
+          if (targetScrollRef.current >= cycleWidth * 2.5) {
+            targetScrollRef.current -= cycleWidth;
+            touchStartScrollRef.current -= cycleWidth;
+            currentScrollRef.current -= cycleWidth;
+            trackRef.current.scrollLeft = currentScrollRef.current;
+          } else if (targetScrollRef.current < cycleWidth * 1.5) {
+            targetScrollRef.current += cycleWidth;
+            touchStartScrollRef.current += cycleWidth;
+            currentScrollRef.current += cycleWidth;
+            trackRef.current.scrollLeft = currentScrollRef.current;
+          }
         }
 
         currentScrollRef.current = targetScrollRef.current;
         trackRef.current.scrollLeft = currentScrollRef.current;
+        updateCurvatureRef.current?.();
       }
     };
 
@@ -268,12 +394,8 @@ export default function OtherProjectsCarousel({
       if (isHorizontalSwipeRef.current) {
         const v = touchVelocityRef.current; // px/ms
         // Inertie de lancer
-        const momentum = -v * 250;
+        const momentum = -v * CAROUSEL_CONFIG.physics.touchMomentum;
         targetScrollRef.current += momentum;
-
-        if (targetScrollRef.current < 0) {
-          targetScrollRef.current = 0;
-        }
 
         if (
           v < -0.15 ||
@@ -316,91 +438,65 @@ export default function OtherProjectsCarousel({
         snapTweenRef.current = null;
       }
     };
-  }, []);
-
-  const handleNext = () => {
-    if (!trackRef.current) return;
-    const cardEl = trackRef.current.firstElementChild as HTMLElement | null;
-    if (!cardEl) return;
-    const step = cardEl.getBoundingClientRect().width + 24;
-    if (step <= 0) return;
-
-    if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
-
-    lastDeltaRef.current = 1;
-
-    const singleSetWidth = trackRef.current.scrollWidth / 4;
-    if (singleSetWidth > 0 && targetScrollRef.current >= singleSetWidth * 2) {
-      targetScrollRef.current -= singleSetWidth;
-      currentScrollRef.current -= singleSetWidth;
-      trackRef.current.scrollLeft = currentScrollRef.current;
-    }
-
-    // Si une animation est déjà en cours, on enchaîne depuis sa cible pour permettre des clics rapides
-    let basePos = targetScrollRef.current;
-    if (snapTweenRef.current?.isActive() && snapTargetRef.current > basePos) {
-      basePos = snapTargetRef.current;
-    }
-
-    const nextIndex = Math.floor(basePos / step + 0.05) + 1;
-    const nextTarget = nextIndex * step;
-    snapTargetRef.current = nextTarget;
-
-    const dist = Math.abs(nextTarget - targetScrollRef.current);
-    const duration = gsap.utils.clamp(0.4, 0.65, dist / 350);
-
-    snapTweenRef.current?.kill();
-    snapTweenRef.current = gsap.to(targetScrollRef, {
-      current: nextTarget,
-      duration,
-      ease: "power2.out",
-    });
-  };
+  }, [baseCount]);
 
   if (!projects || projects.length === 0) {
     return null;
   }
 
+  if (projects.length === 1) {
+    return (
+      <section
+        ref={sectionRef}
+        className="py-12 md:py-16 flex flex-col items-center gap-6 overflow-hidden w-full px-6"
+      >
+        <div className="w-[min(360px,80vw)]">
+          <ProjectCard project={projects[0]} />
+        </div>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center">
+          <ScrollTypewriter start="top 85%" end="top 60%">
+            On continue ?
+          </ScrollTypewriter>
+        </h2>
+      </section>
+    );
+  }
+
+  const fadePercent = CAROUSEL_CONFIG.layout.edgeFadePercent;
+  const maskGradient = `linear-gradient(to right, transparent 0%, black ${fadePercent}%, black ${100 - fadePercent}%, transparent 100%)`;
+
   return (
     <section
       ref={sectionRef}
-      className="p-6 py-16 md:p-16 lg:p-28 xl:p-48 flex flex-col gap-6 md:gap-10 overflow-hidden"
+      className="pt-8 pb-12 sm:pt-12 sm:pb-16 md:pt-16 md:pb-20 overflow-hidden w-full"
     >
-      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal">
-        <ScrollTypewriter start="top 85%" end="top 60%">
-          On continue ?
-        </ScrollTypewriter>
-      </h2>
-
       <div className="relative w-full">
         <div
           ref={trackRef}
-          className="w-full overflow-x-hidden scrollbar-hide flex gap-6 pe-16 touch-pan-y mask-linear-[to_right,#000_80%,#0001_100%]"
+          style={{
+            maskImage: maskGradient,
+            WebkitMaskImage: maskGradient,
+            gap: `${CAROUSEL_CONFIG.layout.cardGap}px`,
+          }}
+          className="w-full overflow-x-hidden scrollbar-hide flex items-start pt-4 pb-38 md:pb-44 touch-pan-y"
         >
           {displayProjects.map((project, i) => (
             <div
               key={`${project.id}-${i}`}
-              className="shrink-0 w-[min(350px,80vw)]"
+              className="shrink-0 w-[min(350px,80vw)] will-change-transform"
             >
               <ProjectCard project={project} />
             </div>
           ))}
         </div>
 
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center">
-          <Button
-            type="button"
-            variant="outline"
-            color="grey"
-            onlyIcon
-            onClick={handleNext}
-            aria-label="Projet suivant"
-          >
-            <Icon
-              name="arrow_forward_ios"
-              className="text-base! translate-x-0.5"
-            />
-          </Button>
+        {/* Titre niché directement au centre dans le creux de l'arc, sans ajouter d'espace sous le carrousel */}
+        <div className="absolute bottom-3 sm:bottom-5 md:bottom-7 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl flex justify-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center whitespace-nowrap">
+            <ScrollTypewriter start="top 85%" end="top 60%">
+              On continue ?
+            </ScrollTypewriter>
+          </h2>
         </div>
       </div>
     </section>
