@@ -23,6 +23,7 @@ const InfosCard = forwardRef<HTMLDivElement, InfosCardProps>(function InfosCard(
     <Card
       ref={ref}
       wrapperStyle={wrapperStyle}
+      wrapperClassName="flex"
       className="flex flex-col gap-5 p-5 xl:w-max max-w-full"
     >
       <div className="flex items-start gap-6">
