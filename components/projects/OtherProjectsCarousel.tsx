@@ -20,6 +20,8 @@ export default function OtherProjectsCarousel({
   const targetScrollRef = useRef(0);
   const currentScrollRef = useRef(0);
   const snapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const snapTweenRef = useRef<gsap.core.Tween | null>(null);
+  const lastDeltaRef = useRef(0);
 
   // Duplicate project array to form seamless infinite loops
   const displayProjects = [...projects, ...projects, ...projects, ...projects];
@@ -46,12 +48,20 @@ export default function OtherProjectsCarousel({
           if (currentScrollRef.current >= singleSetWidth * 2) {
             currentScrollRef.current -= singleSetWidth;
             targetScrollRef.current -= singleSetWidth;
+            if (snapTweenRef.current) {
+              snapTweenRef.current.kill();
+              snapTweenRef.current = null;
+            }
           } else if (
             currentScrollRef.current <= 0 &&
             targetScrollRef.current < 0
           ) {
             currentScrollRef.current += singleSetWidth;
             targetScrollRef.current += singleSetWidth;
+            if (snapTweenRef.current) {
+              snapTweenRef.current.kill();
+              snapTweenRef.current = null;
+            }
           }
 
           track.scrollLeft = currentScrollRef.current;
@@ -62,6 +72,10 @@ export default function OtherProjectsCarousel({
 
       return () => {
         gsap.ticker.remove(tickerFunc);
+        if (snapTweenRef.current) {
+          snapTweenRef.current.kill();
+          snapTweenRef.current = null;
+        }
       };
     },
     { scope: sectionRef, dependencies: [projects] },
@@ -76,9 +90,59 @@ export default function OtherProjectsCarousel({
       // card width + gap (24px)
       const step = cardEl.getBoundingClientRect().width + 24;
       if (step <= 0) return;
-      const nearest = Math.round(targetScrollRef.current / step) * step;
-      targetScrollRef.current = nearest;
-    }, 150);
+
+      const singleSetWidth = trackRef.current.scrollWidth / 4;
+      if (singleSetWidth > 0 && targetScrollRef.current >= singleSetWidth * 2) {
+        targetScrollRef.current -= singleSetWidth;
+        currentScrollRef.current -= singleSetWidth;
+        trackRef.current.scrollLeft = currentScrollRef.current;
+      }
+
+      const currentTarget = targetScrollRef.current;
+      const cardIndexFloat = currentTarget / step;
+      const direction = lastDeltaRef.current;
+
+      let nearestIndex: number;
+
+      if (direction > 0) {
+        // En scroll vers l'avant : une avancée intentionnelle (> 8% de la carte) valide le passage à la carte suivante
+        const baseIndex = Math.floor(cardIndexFloat);
+        const progress = cardIndexFloat - baseIndex;
+        if (progress > 0.08) {
+          nearestIndex = baseIndex + 1;
+        } else {
+          nearestIndex = baseIndex;
+        }
+      } else if (direction < 0) {
+        // En scroll vers l'arrière : recul intentionnel vers la carte précédente
+        const baseIndex = Math.floor(cardIndexFloat);
+        const progress = cardIndexFloat - baseIndex;
+        if (progress < 0.92) {
+          nearestIndex = baseIndex;
+        } else {
+          nearestIndex = baseIndex + 1;
+        }
+      } else {
+        nearestIndex = Math.round(cardIndexFloat);
+      }
+
+      if (nearestIndex < 0) nearestIndex = 0;
+
+      const nearest = nearestIndex * step;
+      const dist = Math.abs(nearest - currentTarget);
+
+      if (dist < 1) return;
+
+      // Transition progressive et douce vers la carte ciblée (évite le à-coup violent)
+      const duration = gsap.utils.clamp(0.4, 0.75, dist / 250);
+
+      snapTweenRef.current?.kill();
+      snapTweenRef.current = gsap.to(targetScrollRef, {
+        current: nearest,
+        duration,
+        ease: "power2.out",
+      });
+    }, 220);
   };
 
   useEffect(() => {
@@ -92,11 +156,24 @@ export default function OtherProjectsCarousel({
       if (isSectionVisible) {
         if (e.deltaY > 0) {
           e.preventDefault();
+          lastDeltaRef.current = e.deltaY;
+          if (snapTweenRef.current) {
+            snapTweenRef.current.kill();
+            snapTweenRef.current = null;
+          }
           targetScrollRef.current += e.deltaY * 0.8;
           scheduleSnap();
         } else if (e.deltaY < 0 && targetScrollRef.current > 10) {
           e.preventDefault();
+          lastDeltaRef.current = e.deltaY;
+          if (snapTweenRef.current) {
+            snapTweenRef.current.kill();
+            snapTweenRef.current = null;
+          }
           targetScrollRef.current += e.deltaY * 0.8;
+          if (targetScrollRef.current < 0) {
+            targetScrollRef.current = 0;
+          }
           scheduleSnap();
         }
       }
@@ -106,6 +183,10 @@ export default function OtherProjectsCarousel({
     return () => {
       window.removeEventListener("wheel", handleWheel);
       if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
+      if (snapTweenRef.current) {
+        snapTweenRef.current.kill();
+        snapTweenRef.current = null;
+      }
     };
   }, []);
 
