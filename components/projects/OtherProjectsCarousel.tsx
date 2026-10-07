@@ -26,6 +26,16 @@ export default function OtherProjectsCarousel({
   const snapTargetRef = useRef(0);
   const lastDeltaRef = useRef(0);
 
+  // Gestion du glissement tactile (mobile / tablette)
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+  const touchStartScrollRef = useRef(0);
+  const isTouchingRef = useRef(false);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const lastTouchXRef = useRef(0);
+  const lastTouchTimeRef = useRef(0);
+  const touchVelocityRef = useRef(0);
+
   // Duplicate project array to form seamless infinite loops
   const displayProjects = [...projects, ...projects, ...projects, ...projects];
 
@@ -182,9 +192,124 @@ export default function OtherProjectsCarousel({
       }
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1 || !trackRef.current) return;
+      const touch = e.touches[0];
+      touchStartXRef.current = touch.clientX;
+      touchStartYRef.current = touch.clientY;
+      touchStartScrollRef.current = targetScrollRef.current;
+      lastTouchXRef.current = touch.clientX;
+      lastTouchTimeRef.current = performance.now();
+      touchVelocityRef.current = 0;
+      isHorizontalSwipeRef.current = null;
+      isTouchingRef.current = true;
+
+      if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
+      if (snapTweenRef.current) {
+        snapTweenRef.current.kill();
+        snapTweenRef.current = null;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isTouchingRef.current || e.touches.length !== 1 || !trackRef.current)
+        return;
+      const touch = e.touches[0];
+      const diffX = touch.clientX - touchStartXRef.current;
+      const diffY = touch.clientY - touchStartYRef.current;
+
+      // Détecte si le geste est horizontal ou vertical après quelques pixels
+      if (isHorizontalSwipeRef.current === null) {
+        if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
+          isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
+        }
+      }
+
+      // Si le geste est horizontal, on intercepte et fait défiler le carrousel
+      if (isHorizontalSwipeRef.current) {
+        if (e.cancelable) e.preventDefault();
+
+        const now = performance.now();
+        const dt = now - lastTouchTimeRef.current;
+        if (dt > 0) {
+          const dx = touch.clientX - lastTouchXRef.current;
+          touchVelocityRef.current = dx / dt;
+        }
+        lastTouchXRef.current = touch.clientX;
+        lastTouchTimeRef.current = now;
+
+        targetScrollRef.current = touchStartScrollRef.current - diffX;
+
+        // Bouclage infini en glissement continu
+        const singleSetWidth = trackRef.current.scrollWidth / 4;
+        if (
+          singleSetWidth > 0 &&
+          targetScrollRef.current >= singleSetWidth * 2
+        ) {
+          targetScrollRef.current -= singleSetWidth;
+          touchStartScrollRef.current -= singleSetWidth;
+          currentScrollRef.current -= singleSetWidth;
+          trackRef.current.scrollLeft = currentScrollRef.current;
+        }
+
+        if (targetScrollRef.current < 0) {
+          targetScrollRef.current = targetScrollRef.current * 0.3;
+        }
+
+        currentScrollRef.current = targetScrollRef.current;
+        trackRef.current.scrollLeft = currentScrollRef.current;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (!isTouchingRef.current || !trackRef.current) return;
+      isTouchingRef.current = false;
+
+      if (isHorizontalSwipeRef.current) {
+        const v = touchVelocityRef.current; // px/ms
+        // Inertie de lancer
+        const momentum = -v * 250;
+        targetScrollRef.current += momentum;
+
+        if (targetScrollRef.current < 0) {
+          targetScrollRef.current = 0;
+        }
+
+        if (
+          v < -0.15 ||
+          targetScrollRef.current > touchStartScrollRef.current
+        ) {
+          lastDeltaRef.current = 1;
+        } else if (
+          v > 0.15 ||
+          targetScrollRef.current < touchStartScrollRef.current
+        ) {
+          lastDeltaRef.current = -1;
+        }
+
+        scheduleSnap();
+      }
+      isHorizontalSwipeRef.current = null;
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+
+    const track = trackRef.current;
+    if (track) {
+      track.addEventListener("touchstart", handleTouchStart, { passive: true });
+      track.addEventListener("touchmove", handleTouchMove, { passive: false });
+      track.addEventListener("touchend", handleTouchEnd);
+      track.addEventListener("touchcancel", handleTouchEnd);
+    }
+
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      if (track) {
+        track.removeEventListener("touchstart", handleTouchStart);
+        track.removeEventListener("touchmove", handleTouchMove);
+        track.removeEventListener("touchend", handleTouchEnd);
+        track.removeEventListener("touchcancel", handleTouchEnd);
+      }
       if (snapTimerRef.current) clearTimeout(snapTimerRef.current);
       if (snapTweenRef.current) {
         snapTweenRef.current.kill();
@@ -250,7 +375,7 @@ export default function OtherProjectsCarousel({
       <div className="relative w-full">
         <div
           ref={trackRef}
-          className="w-full overflow-x-hidden scrollbar-hide flex gap-6 pe-16 mask-linear-[to_right,#000_80%,#0001_100%]"
+          className="w-full overflow-x-hidden scrollbar-hide flex gap-6 pe-16 touch-pan-y mask-linear-[to_right,#000_80%,#0001_100%]"
         >
           {displayProjects.map((project, i) => (
             <div
