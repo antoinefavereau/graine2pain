@@ -20,6 +20,10 @@ export const CAROUSEL_CONFIG = {
     maxAngle: 0.95, // Angle maximal d'inflexion (en radians, clamp)
     rotationFactor: 0.55, // Ratio de rotation des cartes (adouci pour accompagner harmonieusement la courbe)
     cullDistanceFactor: 1.25, // Facteur de distance au-delà duquel les cartes ne sont plus transformées
+    maxScale: 1.1, // Échelle au centre de l'arc (accentuée pour une présence nettement plus marquée)
+    minScale: 0.7, // Échelle minimale sur les extrémités
+    centerSpacingBoost: 20, // Espace supplémentaire au sommet pour aérer la carte centrale agrandie (px)
+    sideTightening: 0.2, // Facteur de resserrement progressif sur les flancs (0 = aucun, 0.25 = resserré)
   },
   // Espacement & disposition
   layout: {
@@ -136,18 +140,48 @@ export default function OtherProjectsCarousel({
 
           if (Math.abs(dist) > trackWidth * arcSettings.cullDistanceFactor) {
             card.style.transform = "";
+            card.style.zIndex = "";
             continue;
           }
+
+          const absDist = Math.abs(dist);
+          const cardStep = currentCardWidth + CAROUSEL_CONFIG.layout.cardGap;
+
+          // 1. Aération au sommet (centre) : dégage de l'espace autour de la carte centrale agrandie
+          // pour éviter que les coins supérieurs ne s'entrechoquent
+          const u = Math.min(1, absDist / cardStep);
+          const centerBoost =
+            arcSettings.centerSpacingBoost * (3 * u * u - 2 * u * u * u);
+
+          // 2. Resserrement sur les côtés : rapproche les cartes plus petites sur les flancs de l'arc
+          // pour éviter les grands vides créés par la diminution de taille et la courbure
+          const sideDist = Math.max(0, absDist - cardStep);
+          const sideTighten = arcSettings.sideTightening * sideDist;
+
+          // Déplacement net (positif = poussé vers l'extérieur pour aérer le haut, négatif = rapproché pour serrer les côtés)
+          const netShift = centerBoost - sideTighten;
+          const x = dist !== 0 ? Math.sign(dist) * netShift : 0;
+          const effectiveDist = dist + x;
 
           const angle = gsap.utils.clamp(
             -arcSettings.maxAngle,
             arcSettings.maxAngle,
-            dist / radius,
+            effectiveDist / radius,
           );
           const y = radius * (1 - Math.cos(angle));
           const rot = angle * (180 / Math.PI) * arcSettings.rotationFactor;
 
-          card.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+          // Plus le projet est au centre (effectiveDist proche de 0), plus il est gros
+          const scaleDist = Math.max(currentCardWidth, trackWidth * 0.5);
+          const normDist = Math.min(1, Math.abs(effectiveDist) / scaleDist);
+          const scaleFactor = Math.cos(normDist * (Math.PI / 2));
+          const scale =
+            arcSettings.minScale +
+            (arcSettings.maxScale - arcSettings.minScale) * scaleFactor;
+          const zIndex = Math.round(100 - normDist * 80);
+
+          card.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+          card.style.zIndex = String(zIndex);
         }
       };
 
@@ -468,8 +502,17 @@ export default function OtherProjectsCarousel({
   return (
     <section
       ref={sectionRef}
-      className="pt-8 pb-12 sm:pt-12 sm:pb-16 md:pt-16 md:pb-20 overflow-hidden w-full"
+      className="pt-8 sm:pt-12 md:pt-16 overflow-hidden w-full"
     >
+      {/* Titre au-dessus du carrousel sur mobile (< md) */}
+      <div className="md:hidden px-6 sm:px-8 mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-normal">
+          <ScrollTypewriter start="top 85%" end="top 60%">
+            On continue ?
+          </ScrollTypewriter>
+        </h2>
+      </div>
+
       <div className="relative w-full">
         <div
           ref={trackRef}
@@ -478,7 +521,7 @@ export default function OtherProjectsCarousel({
             WebkitMaskImage: maskGradient,
             gap: `${CAROUSEL_CONFIG.layout.cardGap}px`,
           }}
-          className="w-full overflow-x-hidden scrollbar-hide flex items-start pt-4 pb-38 md:pb-44 touch-pan-y"
+          className="w-full overflow-x-hidden overflow-y-hidden scrollbar-hide flex items-start pt-4 pb-44 sm:pb-52 md:pb-64 touch-pan-y"
         >
           {displayProjects.map((project, i) => (
             <div
@@ -490,8 +533,8 @@ export default function OtherProjectsCarousel({
           ))}
         </div>
 
-        {/* Titre niché directement au centre dans le creux de l'arc, sans ajouter d'espace sous le carrousel */}
-        <div className="absolute bottom-3 sm:bottom-5 md:bottom-7 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl flex justify-center">
+        {/* Titre niché directement au centre dans le creux de l'arc sur desktop (>= md) */}
+        <div className="hidden md:flex absolute md:bottom-28 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl justify-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center whitespace-nowrap">
             <ScrollTypewriter start="top 85%" end="top 60%">
               On continue ?
