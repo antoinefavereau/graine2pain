@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Contact() {
   return (
@@ -8,6 +9,7 @@ export default function Contact() {
         <h1 className="text-7xl font-bold">Me contacter</h1>
         <p className="text-2xl font-light">Page bientôt disponible...</p>
       </div>
+      <Footer />
     </div>
   );
 }
