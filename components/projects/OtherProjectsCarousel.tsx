@@ -502,7 +502,7 @@ export default function OtherProjectsCarousel({
   return (
     <section
       ref={sectionRef}
-      className="pt-8 pb-12 sm:pt-12 sm:pb-16 md:pt-16 md:pb-20 overflow-hidden w-full"
+      className="pt-8 sm:pt-12 md:pt-16 overflow-hidden w-full"
     >
       {/* Titre au-dessus du carrousel sur mobile (< md) */}
       <div className="md:hidden px-6 sm:px-8 mb-6 sm:mb-8">
@@ -521,7 +521,7 @@ export default function OtherProjectsCarousel({
             WebkitMaskImage: maskGradient,
             gap: `${CAROUSEL_CONFIG.layout.cardGap}px`,
           }}
-          className="w-full overflow-x-hidden scrollbar-hide flex items-start pt-4 pb-32 sm:pb-36 md:pb-44 touch-pan-y"
+          className="w-full overflow-x-hidden overflow-y-hidden scrollbar-hide flex items-start pt-4 pb-44 sm:pb-52 md:pb-64 touch-pan-y"
         >
           {displayProjects.map((project, i) => (
             <div
@@ -534,7 +534,7 @@ export default function OtherProjectsCarousel({
         </div>
 
         {/* Titre niché directement au centre dans le creux de l'arc sur desktop (>= md) */}
-        <div className="hidden md:flex absolute bottom-3 sm:bottom-5 md:bottom-7 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl justify-center">
+        <div className="hidden md:flex absolute md:bottom-28 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl justify-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center whitespace-nowrap">
             <ScrollTypewriter start="top 85%" end="top 60%">
               On continue ?
