@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,7 +31,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <LenisProvider>{children}</LenisProvider>
+        <LenisProvider>
+          {children}
+          <Analytics />
+        </LenisProvider>
       </body>
     </html>
   );
