@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "payload migrate && next build",
+    "migrate": "payload migrate",
     "start": "next start",
     "lint": "eslint"
   },
@@ -27,6 +28,7 @@
     "gsap": "^3.14.2",
     "lenis": "^1.3.17",
     "next": "^16.2.0",
+    "next-intl": "^4.15.1",
     "payload": "3.79.0",
     "postprocessing": "^6.39.1",
     "react": "19.2.3",

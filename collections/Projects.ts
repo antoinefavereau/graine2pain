@@ -17,16 +17,19 @@ export const Projects: CollectionConfig = {
       name: "title",
       type: "text",
       required: true,
+      localized: true,
     },
     {
       name: "titleHighlight",
       type: "text",
       label: "Partie colorée du titre (à la fin)",
+      localized: true,
     },
     {
       name: "subTitle",
       type: "text",
       required: true,
+      localized: true,
     },
     {
       name: "images",
@@ -56,6 +59,7 @@ export const Projects: CollectionConfig = {
     {
       name: "blocks",
       type: "blocks",
+      localized: true,
       blocks: [
         // ─────────────────────────────────────────
         // TEXT BLOCK — Texte riche seul ou avec image optionnelle

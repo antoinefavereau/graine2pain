@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
 import { Analytics } from "@vercel/analytics/next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -14,13 +16,16 @@ export const metadata: Metadata = {
   description: "Portfolio de Athéna Moreau",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="fr">
+    <html lang={locale}>
       <head>
         <link
           rel="preload"
@@ -31,10 +36,12 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <LenisProvider>
-          {children}
-          <Analytics />
-        </LenisProvider>
+        <NextIntlClientProvider messages={messages}>
+          <LenisProvider>
+            {children}
+            <Analytics />
+          </LenisProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { twMerge } from "tailwind-merge";
+import { useTranslations } from "next-intl";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ interface FooterProps {
 }
 
 export default function Footer({ className }: FooterProps) {
+  const t = useTranslations("Footer");
   const containerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +58,7 @@ export default function Footer({ className }: FooterProps) {
         {/* Left Column: Contact Information */}
         <div className="flex flex-col gap-.5 text-xs sm:text-sm text-grey-lighter">
           <div>
-            <span className="font-bold">E-mail : </span>
+            <span className="font-bold">{t("email")}</span>
             <a
               href="mailto:cheveche.d.athena05@gmail.com"
               className="hover:text-primary-base transition-colors"
@@ -65,7 +67,7 @@ export default function Footer({ className }: FooterProps) {
             </a>
           </div>
           <div>
-            <span className="font-bold">LinkedIn : </span>
+            <span className="font-bold">{t("linkedin")}</span>
             <a
               href="https://www.linkedin.com/in/ath%C3%A9na-moreau-80a397239"
               target="_blank"
@@ -76,15 +78,15 @@ export default function Footer({ className }: FooterProps) {
             </a>
           </div>
           <div>
-            <span className="font-bold">Localisation : </span>
-            <span>Paris, France (Ouverte à la mobilité)</span>
+            <span className="font-bold">{t("location")}</span>
+            <span>{t("locationValue")}</span>
           </div>
         </div>
 
         {/* Right Column: Title & Name */}
         <div className="flex flex-col items-start md:items-end gap-1 md:gap-4">
           <p className="text-xl sm:text-2xl md:text-3xl font-extralight text-grey-light">
-            Product Designer{" "}
+            {t("role")}{" "}
             <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
               UX/UI
             </span>

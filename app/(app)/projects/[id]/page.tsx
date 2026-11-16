@@ -7,6 +7,7 @@ import OtherProjectsCarousel from "@/components/projects/OtherProjectsCarousel";
 import ProjectBackgroundGlow from "@/components/projects/ProjectBackgroundGlow";
 import { safePayloadFind } from "@/lib/payload";
 import Footer from "@/components/Footer";
+import { getLocale } from "next-intl/server";
 
 export default async function ProjectPage({
   params,
@@ -14,18 +15,21 @@ export default async function ProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const locale = await getLocale();
   const payload = await getPayload({ config });
 
   const [projectRes, allProjectsRes] = await Promise.all([
     payload.findByID({
       collection: "projects" as any,
       id,
+      locale: locale as any,
     }),
     safePayloadFind(
       payload,
       {
         collection: "projects" as any,
         sort: "order",
+        locale: locale as any,
       },
       "projects",
     ),

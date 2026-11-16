@@ -2,8 +2,10 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import HomeClient from "@/components/home/Home";
 import { safePayloadFind } from "@/lib/payload";
+import { getLocale } from "next-intl/server";
 
 export default async function Home() {
+  const locale = await getLocale();
   const payload = await getPayload({ config });
 
   const [projects, recommandations, infos] = await Promise.all([
@@ -12,6 +14,7 @@ export default async function Home() {
       {
         collection: "projects" as any,
         sort: "order",
+        locale: locale as any,
       },
       "projects",
     ),
@@ -20,6 +23,7 @@ export default async function Home() {
       {
         collection: "recommandations" as any,
         sort: "order",
+        locale: locale as any,
       },
       "recommandations",
     ),
@@ -28,6 +32,7 @@ export default async function Home() {
       {
         collection: "info" as any,
         sort: "order",
+        locale: locale as any,
       },
       "info",
     ),

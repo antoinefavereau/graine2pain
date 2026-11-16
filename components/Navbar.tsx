@@ -6,9 +6,11 @@ import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
+import { useTranslations } from "next-intl";
 
 import Button from "@/components/Button";
 import Icon from "@/components/Icon";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 type NavbarLink = {
   href: string;
@@ -18,26 +20,27 @@ type NavbarLink = {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const t = useTranslations("Navbar");
   const [isOpen, setIsOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLLIElement>(null);
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
 
   const links: NavbarLink[] = [
-    { href: "/", label: "Accueil", color: "primary" },
+    { href: "/", label: t("home"), color: "primary" },
     {
       href: "/about",
-      label: "Présentation",
+      label: t("about"),
       color: "secondary",
     },
     {
       href: "/projects",
-      label: "Projets",
+      label: t("projects"),
       color: "warning",
     },
     {
       href: "/contact",
-      label: "Me contacter",
+      label: t("contact"),
       color: "info",
     },
   ];
@@ -99,42 +102,48 @@ export default function Navbar() {
   return (
     <nav className="relative" ref={navRef}>
       {/* Desktop Navigation */}
-      <ul className="hidden md:flex justify-around items-center px-4 pt-10 pb-2">
-        {links.map((link, index) => {
-          return (
-            <Fragment key={link.href}>
-              <li
-                ref={(el) => {
-                  itemRefs.current[index] = el;
-                }}
-              >
-                <Link
-                  href={link.href}
-                  className={twMerge(
-                    "px-4 py-3 uppercase text-grey-lighter text-xs",
-                    `hover:${getColor(link.color)}`,
-                    (link.href === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(link.href)) && getColor(link.color),
-                  )}
+      <div className="hidden md:flex justify-center items-center relative px-8 pt-10 pb-2">
+        <ul className="flex justify-around items-center w-full max-w-5xl">
+          {links.map((link, index) => {
+            return (
+              <Fragment key={link.href}>
+                <li
+                  ref={(el) => {
+                    itemRefs.current[index] = el;
+                  }}
                 >
-                  {link.label}
-                </Link>
-              </li>
-              {index + 1 === links.length / 2 && (
-                <li ref={nameRef}>
                   <Link
-                    href="/"
-                    className="text-2xl bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent"
+                    href={link.href}
+                    className={twMerge(
+                      "px-4 py-3 uppercase text-grey-lighter text-xs transition-colors",
+                      `hover:${getColor(link.color)}`,
+                      (link.href === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(link.href)) &&
+                        getColor(link.color),
+                    )}
                   >
-                    MOREAU ATHÉNA
+                    {link.label}
                   </Link>
                 </li>
-              )}
-            </Fragment>
-          );
-        })}
-      </ul>
+                {index + 1 === links.length / 2 && (
+                  <li ref={nameRef}>
+                    <Link
+                      href="/"
+                      className="text-2xl bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent"
+                    >
+                      MOREAU ATHÉNA
+                    </Link>
+                  </li>
+                )}
+              </Fragment>
+            );
+          })}
+        </ul>
+        <div className="absolute right-6 top-10">
+          <LocaleSwitcher />
+        </div>
+      </div>
 
       {/* Mobile Navigation Header */}
       <div className="flex md:hidden justify-between items-center px-6 pt-6 pb-2">
@@ -144,16 +153,19 @@ export default function Navbar() {
         >
           MOREAU ATHÉNA
         </Link>
-        <Button
-          variant="outline"
-          color="grey"
-          onlyIcon
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={isOpen}
-        >
-          <Icon name={isOpen ? "close" : "menu"} className="text-2xl!" />
-        </Button>
+        <div className="flex items-center gap-3">
+          <LocaleSwitcher />
+          <Button
+            variant="outline"
+            color="grey"
+            onlyIcon
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label={isOpen ? t("closeMenu") : t("openMenu")}
+            aria-expanded={isOpen}
+          >
+            <Icon name={isOpen ? "close" : "menu"} className="text-2xl!" />
+          </Button>
+        </div>
       </div>
 
       {/* Mobile Dropdown Menu */}

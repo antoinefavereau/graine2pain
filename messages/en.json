@@ -1,0 +1,40 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "contact": "Contact me",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu"
+  },
+  "Footer": {
+    "email": "Email: ",
+    "linkedin": "LinkedIn: ",
+    "location": "Location: ",
+    "locationValue": "Paris, France (Open to relocation)",
+    "role": "Product Designer"
+  },
+  "Home": {
+    "latestProjects": "Latest projects",
+    "recommendationsLetter": "View full letter",
+    "productDesigner": "Product Designer"
+  },
+  "Projects": {
+    "title": "Projects",
+    "empty": "No projects yet.",
+    "continue": "Keep exploring?"
+  },
+  "About": {
+    "title": "About",
+    "soon": "Page coming soon..."
+  },
+  "Contact": {
+    "title": "Contact me",
+    "soon": "Page coming soon..."
+  },
+  "LocaleSwitcher": {
+    "switch": "Switch language",
+    "fr": "FR",
+    "en": "EN"
+  }
+}

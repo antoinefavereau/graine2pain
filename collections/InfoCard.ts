@@ -16,6 +16,7 @@ export const InfoCard: CollectionConfig = {
     {
       name: "titre",
       type: "text",
+      localized: true,
     },
     {
       name: "icone",
@@ -24,6 +25,7 @@ export const InfoCard: CollectionConfig = {
     {
       name: "valeur",
       type: "text",
+      localized: true,
     },
   ],
 };

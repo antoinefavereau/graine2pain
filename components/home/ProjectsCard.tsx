@@ -11,6 +11,7 @@ import Card from "@/components/Card";
 import Icon from "@/components/Icon";
 import type { Project } from "@/types/Project";
 import ProjectCard from "@/components/projects/ProjectCard";
+import { useTranslations } from "next-intl";
 
 interface ProjectsCardProps {
   projects: Project[];
@@ -19,6 +20,8 @@ interface ProjectsCardProps {
 
 const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
   function ProjectsCard({ projects, wrapperStyle }, ref) {
+    const t = useTranslations("Home");
+
     return (
       <Card
         ref={ref}
@@ -27,7 +30,7 @@ const ProjectsCard = forwardRef<HTMLDivElement, ProjectsCardProps>(
         className="grid gap-5 p-5"
       >
         <div className="flex justify-between align-top">
-          <h2 className="text-lg font-bold">Derniers projets</h2>
+          <h2 className="text-lg font-bold">{t("latestProjects")}</h2>
           <Button variant="outline" color="grey" onlyIcon href="/projects">
             <Icon name="arrow_outward" />
           </Button>

@@ -1,0 +1,40 @@
+{
+  "Navbar": {
+    "home": "Accueil",
+    "about": "Présentation",
+    "projects": "Projets",
+    "contact": "Me contacter",
+    "closeMenu": "Fermer le menu",
+    "openMenu": "Ouvrir le menu"
+  },
+  "Footer": {
+    "email": "E-mail : ",
+    "linkedin": "LinkedIn : ",
+    "location": "Localisation : ",
+    "locationValue": "Paris, France (Ouverte à la mobilité)",
+    "role": "Product Designer"
+  },
+  "Home": {
+    "latestProjects": "Derniers projets",
+    "recommendationsLetter": "Voir la lettre complète",
+    "productDesigner": "Product Designer"
+  },
+  "Projects": {
+    "title": "Projets",
+    "empty": "Aucun projet pour le moment.",
+    "continue": "On continue ?"
+  },
+  "About": {
+    "title": "Présentation",
+    "soon": "Page bientôt disponible..."
+  },
+  "Contact": {
+    "title": "Me contacter",
+    "soon": "Page bientôt disponible..."
+  },
+  "LocaleSwitcher": {
+    "switch": "Changer de langue",
+    "fr": "FR",
+    "en": "EN"
+  }
+}

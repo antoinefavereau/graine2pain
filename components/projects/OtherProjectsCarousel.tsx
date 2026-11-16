@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ScrollTypewriter from "@/components/ScrollTypewriter";
 import type { Project } from "@/types/Project";
+import { useTranslations } from "next-intl";
 
 /**
  * Variables de configuration de l'arrondi et du comportement du carrousel
@@ -52,6 +53,7 @@ export default function OtherProjectsCarousel({
   projects,
   arcConfig,
 }: OtherProjectsCarouselProps) {
+  const t = useTranslations("Projects");
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const targetScrollRef = useRef(0);
@@ -489,7 +491,7 @@ export default function OtherProjectsCarousel({
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center">
           <ScrollTypewriter start="top 85%" end="top 60%">
-            On continue ?
+            {t("continue")}
           </ScrollTypewriter>
         </h2>
       </section>
@@ -508,7 +510,7 @@ export default function OtherProjectsCarousel({
       <div className="md:hidden px-6 sm:px-8 mb-6 sm:mb-8">
         <h2 className="text-2xl sm:text-3xl font-normal">
           <ScrollTypewriter start="top 85%" end="top 60%">
-            On continue ?
+            {t("continue")}
           </ScrollTypewriter>
         </h2>
       </div>
@@ -537,7 +539,7 @@ export default function OtherProjectsCarousel({
         <div className="hidden md:flex absolute md:bottom-28 left-1/2 -translate-x-1/2 pointer-events-none text-center px-4 z-10 w-full max-w-xl justify-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center whitespace-nowrap">
             <ScrollTypewriter start="top 85%" end="top 60%">
-              On continue ?
+              {t("continue")}
             </ScrollTypewriter>
           </h2>
         </div>

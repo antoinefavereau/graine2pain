@@ -17,14 +17,17 @@ export const Recommandations: CollectionConfig = {
     {
       name: "fonction",
       type: "text",
+      localized: true,
     },
     {
       name: "message",
       type: "text",
+      localized: true,
     },
     {
       name: "contenu",
       type: "richText",
+      localized: true,
     },
     {
       name: "image",
