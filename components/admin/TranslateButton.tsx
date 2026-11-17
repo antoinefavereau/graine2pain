@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, useDocumentInfo, toast } from "@payloadcms/ui";
 import { useRouter } from "next/navigation";
 
@@ -9,21 +9,41 @@ export const TranslateButton: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const isCancelledRef = useRef<boolean>(false);
+  const toastIdRef = useRef<string | number | null>(null);
+
   // Ne pas afficher si le document n'a pas encore été sauvegardé (pas d'ID)
   if (!id) {
     return null;
   }
 
+  const handleCancel = () => {
+    isCancelledRef.current = true;
+    if (toastIdRef.current !== null) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
+    }
+    toast.info("Traduction annulée.");
+    setLoading(false);
+  };
+
   const handleTranslate = async () => {
     if (loading) return;
 
-    const confirmed = window.confirm(
-      "Générer la traduction anglaise via l'IA ?\n\nCela traduira les textes du document en français et mettra à jour la version anglaise.",
-    );
-    if (!confirmed) return;
-
     setLoading(true);
-    toast.info("⏳ Traduction IA en cours via Gemini, veuillez patienter...");
+    isCancelledRef.current = false;
+
+    const toastId = toast.loading("⏳ Traduction IA en cours via Gemini...", {
+      action: {
+        label: "Annuler",
+        onClick: (e: React.MouseEvent) => {
+          e.preventDefault();
+          handleCancel();
+        },
+      },
+      duration: Infinity,
+    });
+    toastIdRef.current = toastId;
 
     try {
       const res = await fetch("/api/translate", {
@@ -37,33 +57,46 @@ export const TranslateButton: React.FC = () => {
         }),
       });
 
+      if (isCancelledRef.current) return;
+
       const data = await res.json();
+
+      if (isCancelledRef.current) return;
 
       if (!res.ok) {
         throw new Error(data.error || "Erreur lors de la traduction.");
       }
 
+      if (isCancelledRef.current) return;
+
+      // Fermer le toast de chargement avec le bouton Annuler
+      toast.dismiss(toastId);
+      // Afficher un toast de succès propre (sans bouton Annuler et avec auto-fermeture)
       toast.success(
         "✨ Version anglaise générée avec succès ! Basculez sur 'English' pour la vérifier.",
       );
       router.refresh();
     } catch (err: any) {
+      if (isCancelledRef.current) return;
+
+      toast.dismiss(toastId);
       toast.error(err.message || "Impossible de traduire le document.");
     } finally {
-      setLoading(false);
+      if (!isCancelledRef.current) {
+        setLoading(false);
+      }
+      toastIdRef.current = null;
     }
   };
 
   return (
-    <div style={{ marginRight: "8px", display: "inline-flex" }}>
-      <Button
-        buttonStyle="secondary"
-        size="small"
-        onClick={handleTranslate}
-        disabled={loading}
-      >
-        {loading ? "Traduction en cours..." : "✨ Traduire en anglais"}
-      </Button>
-    </div>
+    <Button
+      buttonStyle="secondary"
+      size="small"
+      onClick={handleTranslate}
+      disabled={loading}
+    >
+      {loading ? "Traduction en cours..." : "✨ Traduire en anglais"}
+    </Button>
   );
 };

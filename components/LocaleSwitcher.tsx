@@ -1,61 +1,84 @@
 "use client";
 
-import { useLocale } from "next-intl";
-import { useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useTransition, useState, useEffect } from "react";
 import { setLocaleAction } from "@/lib/actions/locale";
 import { twMerge } from "tailwind-merge";
+
+import Card from "@/components/Card";
+import Button from "@/components/Button";
 
 interface LocaleSwitcherProps {
   className?: string;
 }
 
 export default function LocaleSwitcher({ className }: LocaleSwitcherProps) {
+  const t = useTranslations("LocaleSwitcher");
   const currentLocale = useLocale();
   const [isPending, startTransition] = useTransition();
+  const [optimisticLocale, setOptimisticLocale] = useState(currentLocale);
+
+  useEffect(() => {
+    setOptimisticLocale(currentLocale);
+  }, [currentLocale]);
 
   const handleToggle = (locale: "fr" | "en") => {
-    if (locale === currentLocale || isPending) return;
+    if (locale === optimisticLocale || isPending) return;
+    setOptimisticLocale(locale);
     startTransition(async () => {
       await setLocaleAction(locale);
     });
   };
 
   return (
-    <div
+    <Card
+      wrapperClassName={twMerge("inline-flex shrink-0", className)}
       className={twMerge(
-        "inline-flex items-center text-xs tracking-wider rounded-full border border-grey-dark/50 bg-grey-darkest/70 p-1 backdrop-blur-sm",
-        isPending && "opacity-60 cursor-wait",
-        className,
+        "relative flex items-center h-10 rounded-full before:rounded-full select-none",
       )}
-      aria-label="Language selector"
+      aria-label={t("languageSelector")}
     >
-      <button
+      {/* Sliding circular indicator */}
+      <div
+        className={twMerge(
+          "absolute top-0 bottom-0 w-10 h-10 rounded-full bg-[#d9dbdf] shadow-xs transition-transform duration-300 ease-in-out pointer-events-none",
+          optimisticLocale === "en" ? "translate-x-10" : "translate-x-0",
+        )}
+      />
+
+      <Button
         type="button"
+        variant="text"
+        color="grey"
         onClick={() => handleToggle("fr")}
         disabled={isPending}
         className={twMerge(
-          "px-2.5 py-1 rounded-full transition-all duration-200 cursor-pointer text-xs font-medium",
-          currentLocale === "fr"
-            ? "bg-grey-darker text-primary-base font-semibold shadow-xs"
-            : "text-grey-lighter hover:text-white",
+          "relative z-10 w-10 h-10 p-0 rounded-full text-xs font-semibold cursor-pointer border-none hover:border-transparent transition-colors duration-200 ease-in-out",
+          optimisticLocale === "fr"
+            ? "text-grey-darkest font-bold hover:text-grey-darkest hover:bg-transparent"
+            : "text-grey-light hover:text-white hover:bg-transparent",
         )}
+        aria-label="Français"
       >
-        FR
-      </button>
-      <span className="text-grey-dark select-none text-[10px]">|</span>
-      <button
+        Fr
+      </Button>
+
+      <Button
         type="button"
+        variant="text"
+        color="grey"
         onClick={() => handleToggle("en")}
         disabled={isPending}
         className={twMerge(
-          "px-2.5 py-1 rounded-full transition-all duration-200 cursor-pointer text-xs font-medium",
-          currentLocale === "en"
-            ? "bg-grey-darker text-primary-base font-semibold shadow-xs"
-            : "text-grey-lighter hover:text-white",
+          "relative z-10 w-10 h-10 p-0 rounded-full text-xs font-semibold cursor-pointer border-none hover:border-transparent transition-colors duration-200 ease-in-out",
+          optimisticLocale === "en"
+            ? "text-grey-darkest font-bold hover:text-grey-darkest hover:bg-transparent"
+            : "text-grey-light hover:text-white hover:bg-transparent",
         )}
+        aria-label="English"
       >
-        EN
-      </button>
-    </div>
+        En
+      </Button>
+    </Card>
   );
 }

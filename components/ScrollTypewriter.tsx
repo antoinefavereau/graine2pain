@@ -23,7 +23,11 @@ const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
     return parts.map((part, i) => {
       if (/^\s+$/.test(part)) {
         return (
-          <span key={i} data-char className="char-space opacity-0">
+          <span
+            key={i}
+            data-char
+            className="char-space inline-block whitespace-pre opacity-0"
+          >
             {part}
           </span>
         );
@@ -57,7 +61,11 @@ function processChildren(children: ReactNode): ReactNode {
     return parts.map((part, i) => {
       if (/^\s+$/.test(part)) {
         return (
-          <span key={i} data-char className="char-space opacity-0">
+          <span
+            key={i}
+            data-char
+            className="char-space inline-block whitespace-pre opacity-0"
+          >
             {part}
           </span>
         );
@@ -107,6 +115,7 @@ export default function ScrollTypewriter({
 }: ScrollTypewriterProps) {
   const container = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
+  const progressRef = useRef<number | null>(null);
 
   useGSAP(
     () => {
@@ -115,10 +124,23 @@ export default function ScrollTypewriter({
       const charElements =
         container.current.querySelectorAll<HTMLElement>("[data-char]");
       const totalChars = charElements.length;
-      if (totalChars === 0) return;
-
       const cursor = cursorRef.current;
-      const proxy = { count: 0 };
+
+      if (totalChars === 0) {
+        cursor.style.opacity = "0";
+        return;
+      }
+
+      // Initialize count based on previous progress if already scrolled, or 0 if first mount
+      const currentProgress = progressRef.current ?? 0;
+      const initialCount =
+        currentProgress >= 1
+          ? totalChars
+          : currentProgress <= 0
+            ? 0
+            : Math.round(currentProgress * totalChars);
+
+      const proxy = { count: initialCount };
 
       const updateTypingCount = (count: number) => {
         const currentCount = Math.min(
@@ -130,15 +152,40 @@ export default function ScrollTypewriter({
           el.style.opacity = idx < currentCount ? "1" : "0";
         });
 
-        if (currentCount > 0 && charElements[currentCount - 1]) {
-          charElements[currentCount - 1].after(cursor);
-        } else if (charElements[0]) {
-          charElements[0].before(cursor);
+        if (!container.current || !cursor) return;
+
+        const containerRect = container.current.getBoundingClientRect();
+        if (containerRect.width === 0 && containerRect.height === 0) {
+          cursor.style.opacity = "0";
+          return;
+        }
+
+        const targetEl =
+          currentCount > 0
+            ? charElements[Math.min(currentCount - 1, totalChars - 1)]
+            : charElements[0];
+
+        if (targetEl) {
+          const targetRect = targetEl.getBoundingClientRect();
+          const atEnd = currentCount > 0;
+          const offsetMargin = atEnd ? 2 : 0;
+          const x =
+            (atEnd ? targetRect.right : targetRect.left) -
+            containerRect.left -
+            container.current.clientLeft +
+            offsetMargin;
+          const y =
+            targetRect.top - containerRect.top - container.current.clientTop;
+          const height = targetRect.height || targetEl.offsetHeight || 24;
+
+          cursor.style.height = `${height}px`;
+          cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          cursor.style.opacity = "1";
         }
       };
 
-      // Set initial state
-      updateTypingCount(0);
+      // Set initial count
+      updateTypingCount(initialCount);
 
       const animateToTarget = (target: number) => {
         const targetCount = Math.min(
@@ -169,40 +216,71 @@ export default function ScrollTypewriter({
         start,
         end,
         onUpdate: (self) => {
+          progressRef.current = self.progress;
           animateToTarget(self.progress * totalChars);
         },
         onLeave: () => {
+          progressRef.current = 1;
           animateToTarget(totalChars);
         },
         onLeaveBack: () => {
+          progressRef.current = 0;
           animateToTarget(0);
         },
         onRefresh: (self) => {
-          if (self.progress >= 1) {
-            animateToTarget(totalChars);
-          } else if (self.progress <= 0) {
-            animateToTarget(0);
-          } else {
-            animateToTarget(self.progress * totalChars);
-          }
+          progressRef.current = self.progress;
+          const target =
+            self.progress >= 1
+              ? totalChars
+              : self.progress <= 0
+                ? 0
+                : self.progress * totalChars;
+          proxy.count = target;
+          updateTypingCount(target);
         },
       });
+
+      // Synchronize immediately if ScrollTrigger calculated progress
+      if (progressRef.current === null) {
+        progressRef.current = st.progress;
+        const target =
+          st.progress >= 1
+            ? totalChars
+            : st.progress <= 0
+              ? 0
+              : st.progress * totalChars;
+        proxy.count = target;
+        updateTypingCount(target);
+      }
+
+      const handleResize = () => {
+        updateTypingCount(proxy.count);
+      };
+      window.addEventListener("resize", handleResize);
 
       ScrollTrigger.refresh();
 
       return () => {
         st.kill();
         gsap.killTweensOf(proxy);
+        window.removeEventListener("resize", handleResize);
       };
     },
     {
       scope: container,
-      dependencies: [start, end, charsPerSecond, eraseCharsPerSecond],
+      dependencies: [
+        children,
+        content,
+        start,
+        end,
+        charsPerSecond,
+        eraseCharsPerSecond,
+      ],
     },
   );
 
   return (
-    <div ref={container} className={className}>
+    <div ref={container} className={`relative ${className}`}>
       {content ? (
         <RichText data={content} converters={jsxConverters} />
       ) : (
@@ -211,7 +289,8 @@ export default function ScrollTypewriter({
       <span
         ref={cursorRef}
         aria-hidden="true"
-        className="w-0.5 h-[1em] bg-current inline-block ms-0.5 align-middle pointer-events-none animate-[blink_1.5s_steps(2)_infinite]"
+        className="absolute top-0 left-0 w-0.5 bg-current pointer-events-none animate-[blink_1.5s_steps(2)_infinite]"
+        style={{ opacity: 0 }}
       />
     </div>
   );
