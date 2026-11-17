@@ -4,6 +4,13 @@ export const InfoCard: CollectionConfig = {
   slug: "info",
   admin: {
     useAsTitle: "titre",
+    components: {
+      edit: {
+        beforeDocumentControls: [
+          "/components/admin/TranslateButton#TranslateButton",
+        ],
+      },
+    },
   },
   fields: [
     {

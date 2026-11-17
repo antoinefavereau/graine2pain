@@ -4,6 +4,13 @@ export const Projects: CollectionConfig = {
   slug: "projects",
   admin: {
     useAsTitle: "title",
+    components: {
+      edit: {
+        beforeDocumentControls: [
+          "/components/admin/TranslateButton#TranslateButton",
+        ],
+      },
+    },
   },
   fields: [
     {
