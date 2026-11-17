@@ -5,7 +5,8 @@
     "projects": "Projets",
     "contact": "Me contacter",
     "closeMenu": "Fermer le menu",
-    "openMenu": "Ouvrir le menu"
+    "openMenu": "Ouvrir le menu",
+    "mainNavigation": "Navigation principale"
   },
   "Footer": {
     "email": "E-mail : ",
@@ -35,6 +36,7 @@
   "LocaleSwitcher": {
     "switch": "Changer de langue",
     "fr": "FR",
-    "en": "EN"
+    "en": "EN",
+    "languageSelector": "Sélecteur de langue"
   }
 }
