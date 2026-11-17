@@ -13,7 +13,6 @@ import { Tags } from "./collections/Tags";
 import { InfoCard } from "./collections/InfoCard";
 import { Recommandations } from "./collections/Recommandations";
 import { Projects } from "./collections/Projects";
-import { migrations } from "./migrations";
 import { translateEndpointHandler } from "./lib/ai/endpoint";
 
 const filename = fileURLToPath(import.meta.url);
@@ -58,7 +57,6 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
-    prodMigrations: migrations,
   }),
   sharp,
   plugins: [
