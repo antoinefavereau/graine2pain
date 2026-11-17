@@ -54,11 +54,18 @@ const colorStyles: Record<
 // Persistent flags across client-side page navigations
 let hasAnimatedInitialEntrance = false;
 let wasScrolledGlobal = false;
+let previousIndicatorState: {
+  left: number;
+  width: number;
+  color: ColorType;
+} | null = null;
+let cachedExpandedPositions: { left: number; width: number }[] = [];
 
 export default function Navbar() {
   const pathname = usePathname();
   const t = useTranslations("Navbar");
   const navRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [isScrolled, setIsScrolled] = useState(wasScrolledGlobal);
 
   const links: NavbarLink[] = [
@@ -87,6 +94,131 @@ export default function Navbar() {
       color: "info",
     },
   ];
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
+
+  const activeIndex = links.findIndex((link) => isLinkActive(link.href));
+  const currentLink = activeIndex !== -1 ? links[activeIndex] : null;
+  const currentLinkColor: ColorType = currentLink
+    ? currentLink.color
+    : "primary";
+
+  const [indicatorStyle, setIndicatorStyle] = useState(() => {
+    if (previousIndicatorState) {
+      return {
+        left: previousIndicatorState.left,
+        width: previousIndicatorState.width,
+      };
+    }
+    return { left: 0, width: 0 };
+  });
+
+  const [activeColor, setActiveColor] = useState<ColorType>(() => {
+    return previousIndicatorState?.color ?? currentLinkColor;
+  });
+
+  // Mesure et mémorisation des dimensions de tous les liens à l'état étendu
+  const measureExpandedLinks = () => {
+    links.forEach((_, i) => {
+      const el = itemRefs.current[i];
+      if (el && el.offsetWidth > 48) {
+        cachedExpandedPositions[i] = {
+          left: el.offsetLeft,
+          width: el.offsetWidth,
+        };
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (!isScrolled) {
+      // Mesure immédiate si déjà affiché
+      measureExpandedLinks();
+      // Re-mesure après la fin de la transition d'agrandissement (400ms)
+      const timer = setTimeout(measureExpandedLinks, 420);
+      return () => clearTimeout(timer);
+    }
+  }, [isScrolled, pathname, t]);
+
+  // Mise à jour de la position et largeur du curseur coulissant
+  useEffect(() => {
+    if (activeIndex === -1) return;
+
+    const updateIndicatorPosition = () => {
+      const activeEl = itemRefs.current[activeIndex];
+      if (!activeEl) return;
+
+      const height = activeEl.offsetHeight || 40;
+      let targetLeft = 0;
+      let targetWidth = 40;
+
+      if (isScrolled) {
+        // En état réduit (scroll) : cercle parfait de hauteur x hauteur
+        targetWidth = height;
+        targetLeft = activeIndex * (height + 6);
+      } else {
+        // En état étendu : on utilise les dimensions étendues en mémoire
+        const cached = cachedExpandedPositions[activeIndex];
+        if (cached && cached.width > 48) {
+          targetLeft = cached.left;
+          targetWidth = cached.width;
+        } else if (activeEl.offsetWidth > 48) {
+          targetLeft = activeEl.offsetLeft;
+          targetWidth = activeEl.offsetWidth;
+          cachedExpandedPositions[activeIndex] = {
+            left: targetLeft,
+            width: targetWidth,
+          };
+        } else {
+          // Fallback intrinsèque via le scrollWidth réel du texte
+          const span = activeEl.querySelector("span");
+          const textWidth = span ? span.scrollWidth : 80;
+          targetWidth = textWidth + 52;
+          targetLeft = activeEl.offsetLeft;
+        }
+      }
+
+      setIndicatorStyle({ left: targetLeft, width: targetWidth });
+      const newColor = links[activeIndex].color;
+      setActiveColor(newColor);
+
+      previousIndicatorState = {
+        left: targetLeft,
+        width: targetWidth,
+        color: newColor,
+      };
+    };
+
+    if (!previousIndicatorState) {
+      updateIndicatorPosition();
+    } else {
+      const raf = requestAnimationFrame(() => {
+        updateIndicatorPosition();
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [pathname, isScrolled, activeIndex]);
+
+  // Réajustement en cas de redimensionnement de la fenêtre
+  useEffect(() => {
+    const handleResize = () => {
+      if (!isScrolled) {
+        measureExpandedLinks();
+        const cached = cachedExpandedPositions[activeIndex];
+        if (cached) {
+          setIndicatorStyle({ left: cached.left, width: cached.width });
+        }
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [activeIndex, isScrolled]);
 
   // Scroll detection with hysteresis to avoid any flickering / bouncing
   useEffect(() => {
@@ -146,13 +278,6 @@ export default function Navbar() {
     { scope: navRef },
   );
 
-  const isLinkActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
-    return pathname.startsWith(href);
-  };
-
   return (
     <header className="relative w-full h-20 md:h-24 pointer-events-none">
       <Card
@@ -164,13 +289,61 @@ export default function Navbar() {
           aria-label={t("mainNavigation")}
           className="flex items-center gap-2"
         >
-          <ul className="flex items-center gap-1.5">
-            {links.map((link) => {
+          <ul className="relative flex items-center gap-1.5">
+            {/* Sliding active indicator (comme LocaleSwitcher avec fondu croisé de couleur comme ProjectBackgroundGlow) */}
+            {activeIndex !== -1 && (
+              <div
+                aria-hidden="true"
+                className={twMerge(
+                  "absolute top-0 bottom-0 rounded-full pointer-events-none overflow-hidden z-0 shadow-xs",
+                  "transition-[transform,width] duration-400 ease-in-out will-change-transform",
+                  indicatorStyle.width > 0 ? "opacity-100" : "opacity-0",
+                )}
+                style={{
+                  transform: `translateX(${indicatorStyle.left}px)`,
+                  width: `${indicatorStyle.width}px`,
+                }}
+              >
+                {/* Couches de couleur à fondu croisé accéléré matériellement */}
+                <div
+                  className={twMerge(
+                    "absolute inset-0 rounded-full bg-primary-base transition-opacity duration-400 ease-in-out will-change-opacity",
+                    activeColor === "primary" ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <div
+                  className={twMerge(
+                    "absolute inset-0 rounded-full bg-secondary-base transition-opacity duration-400 ease-in-out will-change-opacity",
+                    activeColor === "secondary" ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <div
+                  className={twMerge(
+                    "absolute inset-0 rounded-full bg-warning-base transition-opacity duration-400 ease-in-out will-change-opacity",
+                    activeColor === "warning" ? "opacity-100" : "opacity-0",
+                  )}
+                />
+                <div
+                  className={twMerge(
+                    "absolute inset-0 rounded-full bg-info-base transition-opacity duration-400 ease-in-out will-change-opacity",
+                    activeColor === "info" ? "opacity-100" : "opacity-0",
+                  )}
+                />
+              </div>
+            )}
+
+            {links.map((link, index) => {
               const active = isLinkActive(link.href);
               const colorConfig = colorStyles[link.color];
 
               return (
-                <li key={link.href}>
+                <li
+                  key={link.href}
+                  ref={(el) => {
+                    itemRefs.current[index] = el;
+                  }}
+                  className="relative z-10"
+                >
                   <Link
                     href={link.href}
                     title={link.label}
@@ -179,7 +352,7 @@ export default function Navbar() {
                       "h-10 min-w-10 rounded-full flex items-center justify-center cursor-pointer select-none",
                       "transition-[padding,background-color,color] duration-400 ease-in-out",
                       active
-                        ? `${colorConfig.active} font-semibold`
+                        ? "text-grey-darkest font-semibold hover:text-grey-darkest hover:bg-transparent"
                         : `text-grey-light ${colorConfig.hover}`,
                       isScrolled ? "px-2" : "px-3",
                     )}
