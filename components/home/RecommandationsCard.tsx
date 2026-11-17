@@ -9,6 +9,7 @@ import { Mousewheel, Navigation } from "swiper/modules";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Icon from "@/components/Icon";
+import { useTranslations } from "next-intl";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -32,6 +33,7 @@ const RecommandationsCard = forwardRef<
   HTMLDivElement,
   RecommandationsCardProps
 >(function RecommandationsCard({ recommandations, style }, ref) {
+  const t = useTranslations("Home");
   const [prevEl, setPrevEl] = useState<HTMLElement | null>(null);
   const [nextEl, setNextEl] = useState<HTMLElement | null>(null);
 
@@ -82,7 +84,7 @@ const RecommandationsCard = forwardRef<
       </Swiper>
       <div className="flex justify-between items-center gap-5">
         <Button variant="outline" color="grey">
-          Voir la lettre complète
+          {t("recommendationsLetter")}
         </Button>
         <div className="flex gap-5">
           <Button ref={setPrevEl} variant="outline" color="grey" onlyIcon>

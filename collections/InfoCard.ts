@@ -4,6 +4,13 @@ export const InfoCard: CollectionConfig = {
   slug: "info",
   admin: {
     useAsTitle: "titre",
+    components: {
+      edit: {
+        beforeDocumentControls: [
+          "/components/admin/TranslateButton#TranslateButton",
+        ],
+      },
+    },
   },
   fields: [
     {
@@ -16,6 +23,7 @@ export const InfoCard: CollectionConfig = {
     {
       name: "titre",
       type: "text",
+      localized: true,
     },
     {
       name: "icone",
@@ -24,6 +32,7 @@ export const InfoCard: CollectionConfig = {
     {
       name: "valeur",
       type: "text",
+      localized: true,
     },
   ],
 };

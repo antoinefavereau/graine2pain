@@ -13,6 +13,8 @@ import { Tags } from "./collections/Tags";
 import { InfoCard } from "./collections/InfoCard";
 import { Recommandations } from "./collections/Recommandations";
 import { Projects } from "./collections/Projects";
+import { migrations } from "./migrations";
+import { translateEndpointHandler } from "./lib/ai/endpoint";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -26,6 +28,27 @@ export default buildConfig({
   },
   globals: [],
   collections: [Users, Media, Tags, InfoCard, Recommandations, Projects],
+  endpoints: [
+    {
+      path: "/translate",
+      method: "post",
+      handler: translateEndpointHandler,
+    },
+  ],
+  localization: {
+    locales: [
+      {
+        label: "Français",
+        code: "fr",
+      },
+      {
+        label: "English",
+        code: "en",
+      },
+    ],
+    defaultLocale: "fr",
+    fallback: true,
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -35,6 +58,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [
