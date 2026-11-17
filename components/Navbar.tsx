@@ -51,11 +51,15 @@ const colorStyles: Record<
   },
 };
 
+// Persistent flags across client-side page navigations
+let hasAnimatedInitialEntrance = false;
+let wasScrolledGlobal = false;
+
 export default function Navbar() {
   const pathname = usePathname();
   const t = useTranslations("Navbar");
   const navRef = useRef<HTMLDivElement>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(wasScrolledGlobal);
 
   const links: NavbarLink[] = [
     {
@@ -86,28 +90,47 @@ export default function Navbar() {
 
   // Scroll detection with hysteresis to avoid any flickering / bouncing
   useEffect(() => {
-    let lastScrolled = false;
+    let lastScrolled = wasScrolledGlobal;
 
     const handleScroll = () => {
       const y = window.scrollY;
       if (!lastScrolled && y > 50) {
         lastScrolled = true;
+        wasScrolledGlobal = true;
         setIsScrolled(true);
       } else if (lastScrolled && y < 20) {
         lastScrolled = false;
+        wasScrolledGlobal = false;
         setIsScrolled(false);
       }
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    if (wasScrolledGlobal) {
+      // Si on arrive depuis une page déjà scrollée, on laisse le composant s'afficher
+      // en état réduit au montage puis on anime l'agrandissement vers l'état étendu
+      const timer = setTimeout(() => {
+        handleScroll();
+      }, 60);
+
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("scroll", handleScroll);
+      };
+    } else {
+      handleScroll();
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
   }, []);
 
-  // Entrance animation with smooth in-out ease
+  // Entrance animation with smooth in-out ease — uniquement au premier chargement
   useGSAP(
     () => {
       if (!navRef.current) return;
+      if (hasAnimatedInitialEntrance) return;
+      hasAnimatedInitialEntrance = true;
+
       gsap.fromTo(
         navRef.current,
         { autoAlpha: 0, y: -20 },
