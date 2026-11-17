@@ -55,11 +55,26 @@ const colorStyles: Record<
 let hasAnimatedInitialEntrance = false;
 let wasScrolledGlobal = false;
 let previousIndicatorState: {
+  pathname: string;
   left: number;
   width: number;
   color: ColorType;
 } | null = null;
 let cachedExpandedPositions: { left: number; width: number }[] = [];
+let cachedTextWidths: number[] = [];
+
+const fallbackWidths = [104, 144, 104, 144];
+const fallbackTextWidths = [56, 96, 56, 96];
+
+const getExpandedFallback = (index: number) => {
+  let left = 0;
+  for (let i = 0; i < index; i++) {
+    left += (cachedExpandedPositions[i]?.width ?? fallbackWidths[i]) + 6;
+  }
+  const width =
+    cachedExpandedPositions[index]?.width ?? fallbackWidths[index] ?? 104;
+  return { left, width };
+};
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -67,6 +82,21 @@ export default function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [isScrolled, setIsScrolled] = useState(wasScrolledGlobal);
+  const [, setMeasureTick] = useState(0);
+
+  const isNewRoute =
+    previousIndicatorState !== null &&
+    previousIndicatorState.pathname !== pathname;
+  const [animatingRoute, setAnimatingRoute] = useState(isNewRoute);
+
+  useEffect(() => {
+    if (animatingRoute) {
+      const timer = setTimeout(() => {
+        setAnimatingRoute(false);
+      }, 20);
+      return () => clearTimeout(timer);
+    }
+  }, [animatingRoute]);
 
   const links: NavbarLink[] = [
     {
@@ -108,117 +138,123 @@ export default function Navbar() {
     ? currentLink.color
     : "primary";
 
-  const [indicatorStyle, setIndicatorStyle] = useState(() => {
-    if (previousIndicatorState) {
-      return {
-        left: previousIndicatorState.left,
-        width: previousIndicatorState.width,
-      };
-    }
-    return { left: 0, width: 0 };
-  });
-
-  const [activeColor, setActiveColor] = useState<ColorType>(() => {
-    return previousIndicatorState?.color ?? currentLinkColor;
-  });
-
   // Mesure et mémorisation des dimensions de tous les liens à l'état étendu
   const measureExpandedLinks = () => {
+    if (isScrolled) return;
+    let changed = false;
     links.forEach((_, i) => {
       const el = itemRefs.current[i];
       if (el && el.offsetWidth > 48) {
-        cachedExpandedPositions[i] = {
-          left: el.offsetLeft,
-          width: el.offsetWidth,
-        };
+        if (
+          !cachedExpandedPositions[i] ||
+          cachedExpandedPositions[i].left !== el.offsetLeft ||
+          cachedExpandedPositions[i].width !== el.offsetWidth
+        ) {
+          cachedExpandedPositions[i] = {
+            left: el.offsetLeft,
+            width: el.offsetWidth,
+          };
+          changed = true;
+        }
+        const span = el.querySelector("span");
+        if (span && span.scrollWidth > 20) {
+          if (cachedTextWidths[i] !== span.scrollWidth) {
+            cachedTextWidths[i] = span.scrollWidth;
+            changed = true;
+          }
+        }
       }
     });
+    if (changed) {
+      setMeasureTick((prev) => prev + 1);
+    }
   };
 
   useEffect(() => {
     if (!isScrolled) {
-      // Mesure immédiate si déjà affiché
       measureExpandedLinks();
-      // Re-mesure après la fin de la transition d'agrandissement (400ms)
       const timer = setTimeout(measureExpandedLinks, 420);
       return () => clearTimeout(timer);
     }
   }, [isScrolled, pathname, t]);
 
-  // Mise à jour de la position et largeur du curseur coulissant
   useEffect(() => {
-    if (activeIndex === -1) return;
-
-    const updateIndicatorPosition = () => {
-      const activeEl = itemRefs.current[activeIndex];
-      if (!activeEl) return;
-
-      const height = activeEl.offsetHeight || 40;
-      let targetLeft = 0;
-      let targetWidth = 40;
-
-      if (isScrolled) {
-        // En état réduit (scroll) : cercle parfait de hauteur x hauteur
-        targetWidth = height;
-        targetLeft = activeIndex * (height + 6);
-      } else {
-        // En état étendu : on utilise les dimensions étendues en mémoire
-        const cached = cachedExpandedPositions[activeIndex];
-        if (cached && cached.width > 48) {
-          targetLeft = cached.left;
-          targetWidth = cached.width;
-        } else if (activeEl.offsetWidth > 48) {
-          targetLeft = activeEl.offsetLeft;
-          targetWidth = activeEl.offsetWidth;
-          cachedExpandedPositions[activeIndex] = {
-            left: targetLeft,
-            width: targetWidth,
-          };
-        } else {
-          // Fallback intrinsèque via le scrollWidth réel du texte
-          const span = activeEl.querySelector("span");
-          const textWidth = span ? span.scrollWidth : 80;
-          targetWidth = textWidth + 52;
-          targetLeft = activeEl.offsetLeft;
+    if (typeof document !== "undefined" && document.fonts) {
+      document.fonts.ready.then(() => {
+        if (!isScrolled) {
+          measureExpandedLinks();
         }
-      }
-
-      setIndicatorStyle({ left: targetLeft, width: targetWidth });
-      const newColor = links[activeIndex].color;
-      setActiveColor(newColor);
-
-      previousIndicatorState = {
-        left: targetLeft,
-        width: targetWidth,
-        color: newColor,
-      };
-    };
-
-    if (!previousIndicatorState) {
-      updateIndicatorPosition();
-    } else {
-      const raf = requestAnimationFrame(() => {
-        updateIndicatorPosition();
       });
-      return () => cancelAnimationFrame(raf);
     }
-  }, [pathname, isScrolled, activeIndex]);
+  }, [isScrolled]);
 
-  // Réajustement en cas de redimensionnement de la fenêtre
   useEffect(() => {
     const handleResize = () => {
       if (!isScrolled) {
         measureExpandedLinks();
-        const cached = cachedExpandedPositions[activeIndex];
-        if (cached) {
-          setIndicatorStyle({ left: cached.left, width: cached.width });
-        }
       }
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [activeIndex, isScrolled]);
+  }, [isScrolled]);
+
+  // Position et largeur cibles pour l'état actuel
+  let targetLeft = 0;
+  let targetWidth = 40;
+
+  if (activeIndex !== -1) {
+    if (isScrolled) {
+      targetWidth = 40;
+      targetLeft = activeIndex * 46; // 40px cercle + 6px (gap-1.5)
+    } else {
+      const cached = cachedExpandedPositions[activeIndex];
+      if (cached && cached.width > 48) {
+        targetLeft = cached.left;
+        targetWidth = cached.width;
+      } else {
+        const fallback = getExpandedFallback(activeIndex);
+        targetLeft = fallback.left;
+        targetWidth = fallback.width;
+      }
+    }
+  }
+
+  // Si on arrive depuis une autre page, on démarre à la position et couleur de la page précédente
+  // pour que la transition CSS glisse fluidement vers le nouveau lien
+  const indicatorLeft =
+    animatingRoute && previousIndicatorState
+      ? previousIndicatorState.left
+      : targetLeft;
+
+  const indicatorWidth =
+    animatingRoute && previousIndicatorState
+      ? previousIndicatorState.width
+      : targetWidth;
+
+  const displayColor: ColorType =
+    animatingRoute && previousIndicatorState
+      ? previousIndicatorState.color
+      : currentLinkColor;
+
+  // Maintien à jour de previousIndicatorState une fois stabilisé
+  useEffect(() => {
+    if (!animatingRoute && activeIndex !== -1) {
+      previousIndicatorState = {
+        pathname,
+        left: targetLeft,
+        width: targetWidth,
+        color: currentLinkColor,
+      };
+    }
+  }, [
+    animatingRoute,
+    pathname,
+    targetLeft,
+    targetWidth,
+    currentLinkColor,
+    activeIndex,
+  ]);
 
   // Scroll detection with hysteresis to avoid any flickering / bouncing
   useEffect(() => {
@@ -297,36 +333,36 @@ export default function Navbar() {
                 className={twMerge(
                   "absolute top-0 bottom-0 rounded-full pointer-events-none overflow-hidden z-0 shadow-xs",
                   "transition-[transform,width] duration-400 ease-in-out will-change-transform",
-                  indicatorStyle.width > 0 ? "opacity-100" : "opacity-0",
+                  indicatorWidth > 0 ? "opacity-100" : "opacity-0",
                 )}
                 style={{
-                  transform: `translateX(${indicatorStyle.left}px)`,
-                  width: `${indicatorStyle.width}px`,
+                  transform: `translateX(${indicatorLeft}px)`,
+                  width: `${indicatorWidth}px`,
                 }}
               >
                 {/* Couches de couleur à fondu croisé accéléré matériellement */}
                 <div
                   className={twMerge(
                     "absolute inset-0 rounded-full bg-primary-base transition-opacity duration-400 ease-in-out will-change-opacity",
-                    activeColor === "primary" ? "opacity-100" : "opacity-0",
+                    displayColor === "primary" ? "opacity-100" : "opacity-0",
                   )}
                 />
                 <div
                   className={twMerge(
                     "absolute inset-0 rounded-full bg-secondary-base transition-opacity duration-400 ease-in-out will-change-opacity",
-                    activeColor === "secondary" ? "opacity-100" : "opacity-0",
+                    displayColor === "secondary" ? "opacity-100" : "opacity-0",
                   )}
                 />
                 <div
                   className={twMerge(
                     "absolute inset-0 rounded-full bg-warning-base transition-opacity duration-400 ease-in-out will-change-opacity",
-                    activeColor === "warning" ? "opacity-100" : "opacity-0",
+                    displayColor === "warning" ? "opacity-100" : "opacity-0",
                   )}
                 />
                 <div
                   className={twMerge(
                     "absolute inset-0 rounded-full bg-info-base transition-opacity duration-400 ease-in-out will-change-opacity",
-                    activeColor === "info" ? "opacity-100" : "opacity-0",
+                    displayColor === "info" ? "opacity-100" : "opacity-0",
                   )}
                 />
               </div>
@@ -335,6 +371,8 @@ export default function Navbar() {
             {links.map((link, index) => {
               const active = isLinkActive(link.href);
               const colorConfig = colorStyles[link.color];
+              const textWidth =
+                cachedTextWidths[index] ?? fallbackTextWidths[index] ?? 90;
 
               return (
                 <li
@@ -365,13 +403,13 @@ export default function Navbar() {
                       )}
                     />
                     <span
+                      style={{
+                        maxWidth: isScrolled ? "0px" : `${textWidth}px`,
+                      }}
                       className={twMerge(
-                        "overflow-hidden whitespace-nowrap text-xs font-semibold uppercase select-none",
+                        "overflow-hidden whitespace-nowrap text-xs font-semibold uppercase select-none hidden md:inline-block",
                         "transition-[max-width,opacity,margin] duration-400 ease-in-out",
-                        isScrolled
-                          ? "max-w-0 opacity-0 ml-0"
-                          : "max-w-40 opacity-100 ml-2",
-                        !isScrolled && "hidden md:inline-block",
+                        isScrolled ? "opacity-0 ml-0" : "opacity-100 ml-2",
                       )}
                     >
                       {link.label}
