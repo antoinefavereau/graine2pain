@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import { gsap } from "gsap";
 
 import FigmaEditCard from "@/components/FigmaEditCard";
@@ -18,6 +19,12 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cardWrapperRef = useRef<HTMLDivElement>(null);
   const cursorWrapperRef = useRef<HTMLDivElement>(null);
+
+  const locale = useLocale();
+  const initialLocaleRef = useRef(locale);
+  const isInitialMount = useRef(true);
+  const isFinishedRef = useRef(false);
+
   const [displayedText, setDisplayedText] = useState("");
   const [hasStarted, setHasStarted] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -28,8 +35,21 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
   const heroAccent = titleHighlight ?? "";
   const heroText = `${heroPrefix}${heroAccent}`;
 
+  // If locale changed from initial, lock animation to finished
+  if (locale !== initialLocaleRef.current) {
+    isFinishedRef.current = true;
+  }
+
+  // If animation is marked finished, show translated text and finished state immediately
+  const textToShow =
+    isFinishedRef.current || hasFinished ? heroText : displayedText;
+  const showBorderActive =
+    isFinishedRef.current || hasFinished || isTyping || hasTyped;
+  const showCornersActive = isFinishedRef.current || hasFinished;
+  const hideBlinkingCursor =
+    isFinishedRef.current || hasFinished || !hasStarted;
+
   useLayoutEffect(() => {
-    const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
     const heroElement = heroRef.current;
     const cursorElement = cursorWrapperRef.current;
     const cardElement = cardWrapperRef.current;
@@ -37,6 +57,36 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
     if (!heroElement || !cursorElement || !cardElement) {
       return;
     }
+
+    // Check if language has changed or if animation has already run/finished
+    const hasLanguageChanged =
+      locale !== initialLocaleRef.current || !isInitialMount.current;
+
+    if (hasLanguageChanged || isFinishedRef.current) {
+      isFinishedRef.current = true;
+      setDisplayedText(heroText);
+      setHasStarted(true);
+      setIsTyping(false);
+      setHasTyped(true);
+      setHasFinished(true);
+
+      gsap.set(cardElement, {
+        opacity: 1,
+        clearProps: "opacity,transform",
+      });
+      gsap.set(cursorElement, {
+        opacity: 1,
+        scale: 1,
+        x: 0,
+        y: 0,
+        clearProps: "opacity,transform",
+      });
+      return;
+    }
+
+    isInitialMount.current = false;
+
+    const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
 
     const heroRect = heroElement.getBoundingClientRect();
     const cursorRect = cursorElement.getBoundingClientRect();
@@ -131,12 +181,13 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
 
     timeline.add(() => {
       setHasFinished(true);
+      isFinishedRef.current = true;
     });
 
     return () => {
       timeline.kill();
     };
-  }, [heroText]);
+  }, [heroText, locale]);
 
   return (
     <div
@@ -150,14 +201,14 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
       >
         <FigmaEditCard
           className="self-center"
-          showBorder={isTyping || hasTyped}
-          showCorners={hasFinished}
+          showBorder={showBorderActive}
+          showCorners={showCornersActive}
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-center whitespace-break-spaces">
-            {displayedText.slice(0, heroPrefix.length)}
-            {displayedText.length > heroPrefix.length && (
+            {textToShow.slice(0, heroPrefix.length)}
+            {textToShow.length > heroPrefix.length && (
               <span className="font-normal bg-linear-to-r from-secondary-base to-primary-base bg-clip-text text-transparent">
-                {displayedText.slice(
+                {textToShow.slice(
                   heroPrefix.length,
                   heroPrefix.length + heroAccent.length,
                 )}
@@ -168,7 +219,7 @@ export default function HeroIntro({ title, titleHighlight }: HeroIntroProps) {
               className={twMerge(
                 "w-0.5 h-[1em] bg-current inline-block mx-1 align-middle",
                 !isTyping && "animate-[blink_1.5s_steps(2)_infinite]",
-                (!hasStarted || hasFinished) && "opacity-0!",
+                hideBlinkingCursor && "opacity-0!",
               )}
             />
           </h1>
