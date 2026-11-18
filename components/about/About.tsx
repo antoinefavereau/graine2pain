@@ -24,11 +24,10 @@ export default function About() {
       const section2 = section2Ref.current;
       if (!athena || !section2) return;
 
-      // Position de départ dans le Hero (décalée sur la droite selon la largeur d'écran)
+      // Position de départ dans le Hero (décalée sur la droite)
       const getInitialX = () => {
         if (window.innerWidth >= 1024) return "24.5vw";
-        if (window.innerWidth >= 640) return "18vw";
-        return "0vw";
+        return "22vw";
       };
 
       gsap.set(athena, {
@@ -87,7 +86,7 @@ export default function About() {
       {/* ── Illustration 3D d'Athéna (Partagée & animée au scroll) ── */}
       <div
         ref={athenaRef}
-        className="fixed bottom-[8vh] left-0 select-none pointer-events-none z-10 w-full h-[70dvh] will-change-transform translate-x-0 sm:translate-x-[18vw] lg:translate-x-[24.5vw]"
+        className="fixed bottom-[8vh] left-0 select-none pointer-events-none z-10 w-full h-[70dvh] will-change-transform translate-x-[22vw] lg:translate-x-[24.5vw]"
         style={{
           transformOrigin: "50% 5%",
         }}
