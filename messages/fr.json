@@ -31,6 +31,9 @@
     "lastName": "MOREAU",
     "role": "Product designer UX UI",
     "description": "Portfolio et présentation d'Athéna Moreau, Product Designer UX/UI.",
+    "introTitle": "Enchantée !",
+    "introText": "Spécialisée en conception d'interfaces, j'allie mes <bold>8 ans de bagage académique en design</bold> et <bold>2 ans d'expérience terrain</bold> dans le <bold>Product Design UX-UI</bold>. J'aime traduire des problématiques complexes en solutions visuellement élégantes et intuitives.",
+    "avatarAlt": "Avatar 3D d'Athéna Moreau",
     "soon": "Page bientôt disponible..."
   },
   "Contact": {

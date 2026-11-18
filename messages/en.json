@@ -31,6 +31,9 @@
     "lastName": "MOREAU",
     "role": "Product designer UX UI",
     "description": "Portfolio and presentation of Athéna Moreau, UX/UI Product Designer.",
+    "introTitle": "Nice to meet you!",
+    "introText": "Specialized in interface design, I combine my <bold>8 years of academic design background</bold> and <bold>2 years of field experience</bold> in <bold>UX-UI Product Design</bold>. I like translating complex problems into visually elegant and intuitive solutions.",
+    "avatarAlt": "3D avatar of Athéna Moreau",
     "soon": "Page coming soon..."
   },
   "Contact": {

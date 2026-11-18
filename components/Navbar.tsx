@@ -76,7 +76,11 @@ const getExpandedFallback = (index: number) => {
   return { left, width };
 };
 
-export default function Navbar() {
+export interface NavbarProps {
+  className?: string;
+}
+
+export default function Navbar({ className }: NavbarProps = {}) {
   const pathname = usePathname();
   const t = useTranslations("Navbar");
   const navRef = useRef<HTMLDivElement>(null);
@@ -315,7 +319,12 @@ export default function Navbar() {
   );
 
   return (
-    <header className="relative w-full h-20 md:h-24 pointer-events-none">
+    <header
+      className={twMerge(
+        "relative w-full h-20 md:h-24 pointer-events-none",
+        className,
+      )}
+    >
       <Card
         ref={navRef}
         wrapperClassName="pointer-events-auto"

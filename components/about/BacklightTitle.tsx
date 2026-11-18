@@ -66,7 +66,7 @@ export default function BacklightTitle({
   speed = 0.45,
   radius = 60,
   fontSize = 14,
-  defaultPosition = { x: 0.65, y: -0.3 },
+  defaultPosition = { x: 0.6, y: -0.3 },
   trackOnWindow = true,
   className,
 }: BacklightTitleProps) {
@@ -118,40 +118,85 @@ export default function BacklightTitle({
     const xTo = gsap.quickTo(posRef.current, "x", {
       duration: speed,
       ease: "power2.out",
-      onUpdate: () => {
-        container.style.setProperty("--light-x", `${posRef.current.x}px`);
-      },
     });
 
     const yTo = gsap.quickTo(posRef.current, "y", {
       duration: speed,
       ease: "power2.out",
-      onUpdate: () => {
-        container.style.setProperty("--light-y", `${posRef.current.y}px`);
-      },
     });
 
-    const handlePointerMove = (clientX: number, clientY: number) => {
+    let lastX = defaultX;
+    let lastY = defaultY;
+    let lastScrollY = window.scrollY;
+    const lastPointerPos = { clientX: 0, clientY: 0, hasPos: false };
+
+    const updatePointerTarget = (clientX: number, clientY: number) => {
+      lastPointerPos.clientX = clientX;
+      lastPointerPos.clientY = clientY;
+      lastPointerPos.hasPos = true;
+      isHoveredRef.current = true;
+
       const rect = container.getBoundingClientRect();
       const x = clientX - rect.left;
       const y = clientY - rect.top;
-      isHoveredRef.current = true;
       xTo(x);
       yTo(y);
     };
 
+    // Mise à jour groupée au taux de rafraîchissement de l'écran (évite les doubles mutations CSS)
+    const onTick = () => {
+      // Si la page a défilé (Lenis ou scroll natif), on recalcule la position de la lumière
+      const currentScrollY = window.scrollY;
+      if (currentScrollY !== lastScrollY) {
+        lastScrollY = currentScrollY;
+        if (isHoveredRef.current && lastPointerPos.hasPos) {
+          const rect = container.getBoundingClientRect();
+          const x = lastPointerPos.clientX - rect.left;
+          const y = lastPointerPos.clientY - rect.top;
+          xTo(x);
+          yTo(y);
+        }
+      }
+
+      const curX = posRef.current.x;
+      const curY = posRef.current.y;
+      if (curX !== lastX || curY !== lastY) {
+        lastX = curX;
+        lastY = curY;
+        container.style.setProperty("--light-x", `${curX}px`);
+        container.style.setProperty("--light-y", `${curY}px`);
+      }
+    };
+
+    gsap.ticker.add(onTick);
+
     const handleMouseMove = (e: MouseEvent) => {
-      handlePointerMove(e.clientX, e.clientY);
+      updatePointerTarget(e.clientX, e.clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+        updatePointerTarget(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      updatePointerTarget(e.clientX, e.clientY);
+    };
+
+    const handleScroll = () => {
+      if (isHoveredRef.current && lastPointerPos.hasPos) {
+        const rect = container.getBoundingClientRect();
+        const x = lastPointerPos.clientX - rect.left;
+        const y = lastPointerPos.clientY - rect.top;
+        xTo(x);
+        yTo(y);
       }
     };
 
     const handlePointerLeave = () => {
       isHoveredRef.current = false;
+      lastPointerPos.hasPos = false;
       const { defaultX: resetX, defaultY: resetY } = calculateDefaultPosition();
       xTo(resetX);
       yTo(resetY);
@@ -172,6 +217,8 @@ export default function BacklightTitle({
     target.addEventListener("touchmove", handleTouchMove as EventListener, {
       passive: true,
     });
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     if (trackOnWindow) {
       document.addEventListener("mouseleave", handlePointerLeave);
@@ -184,8 +231,11 @@ export default function BacklightTitle({
     window.addEventListener("resize", handleResize);
 
     return () => {
+      gsap.ticker.remove(onTick);
       target.removeEventListener("mousemove", handleMouseMove as EventListener);
       target.removeEventListener("touchmove", handleTouchMove as EventListener);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", handleScroll);
 
       if (trackOnWindow) {
         document.removeEventListener("mouseleave", handlePointerLeave);
